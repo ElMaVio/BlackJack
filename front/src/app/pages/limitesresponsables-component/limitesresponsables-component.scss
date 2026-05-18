@@ -1,0 +1,655 @@
+// ============================================
+// Variables — Paleta Cyberpunk / Casino
+// ============================================
+$bg-dark:           #09090e;
+$bg-card:           #12121a;
+$neon-pink:         #ff2a74;
+$neon-purple:       #8a2be2;
+$neon-purple-light: #5c2299;
+$neon-purple-dark:  #3b1166;
+$neon-cyan:         #00d4ff;
+$text-muted:        #808090;
+$text-light:        #e0e0e0;
+$border-color:      #1f1f2e;
+$border-hover:      #2a2a3d;
+$green-active:      #28a745;
+$yellow-warn:       #ffc107;
+
+// ============================================
+// Wrapper Principal
+// ============================================
+.limites-wrapper {
+  min-height: 100vh;
+  background-color: $bg-dark;
+  color: #ffffff;
+  padding: 3rem 2rem;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+// Orbes de fondo decorativos
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+
+  &.orb-1 {
+    width: 400px;
+    height: 400px;
+    background: rgba($neon-purple, 0.06);
+    top: -100px;
+    left: -100px;
+  }
+
+  &.orb-2 {
+    width: 300px;
+    height: 300px;
+    background: rgba($neon-pink, 0.05);
+    bottom: 10%;
+    right: -80px;
+  }
+
+  &.orb-3 {
+    width: 200px;
+    height: 200px;
+    background: rgba($neon-cyan, 0.04);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+// ============================================
+// Header
+// ============================================
+.limites-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 3rem;
+
+  .header-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, $neon-pink, $neon-purple);
+    padding: 0.4rem 1.1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 15px rgba($neon-pink, 0.25);
+    margin-bottom: 1rem;
+  }
+
+  .main-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin: 0 0 0.6rem;
+
+    .title-accent {
+      background: linear-gradient(to right, #ffffff, $neon-cyan);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .subtitle {
+    color: $text-muted;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Stats del header
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $neon-cyan;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: $text-muted;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+// ============================================
+// Loading
+// ============================================
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5rem;
+  position: relative;
+  z-index: 1;
+
+  .spinner-ring {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba($neon-cyan, 0.1);
+    border-radius: 50%;
+    border-top-color: $neon-cyan;
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  .loading-text {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    color: $text-muted;
+
+    .dots { color: $neon-cyan; }
+  }
+}
+
+// ============================================
+// Toolbar
+// ============================================
+.main-content {
+  position: relative;
+  z-index: 1;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 420px;
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background: $bg-card;
+      border: 1px solid $border-color;
+      padding: 0.8rem 1rem 0.8rem 2.8rem;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.88rem;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      box-sizing: border-box;
+
+      &::placeholder { color: $text-muted; }
+
+      &:focus {
+        outline: none;
+        border-color: $neon-cyan;
+        box-shadow: 0 0 12px rgba($neon-cyan, 0.2);
+      }
+    }
+  }
+
+  .btn-crear {
+    background: linear-gradient(135deg, $neon-purple-light, $neon-purple-dark);
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba($neon-purple-light, 0.45);
+    }
+
+    &:active { transform: translateY(0); }
+  }
+}
+
+// ============================================
+// Tabla
+// ============================================
+.table-container {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.limites-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  thead { background: rgba(#fff, 0.02); }
+
+  th {
+    padding: 1.1rem 1.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $text-muted;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .table-row {
+    transition: background 0.2s;
+    animation: fadeInRow 0.3s ease both;
+
+    &:hover { background: rgba(#fff, 0.025); }
+    &:last-child td { border-bottom: none; }
+  }
+
+  td {
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid $border-color;
+    vertical-align: middle;
+    font-size: 0.88rem;
+  }
+
+  .td-usuario {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      background: rgba($neon-cyan, 0.08);
+      border: 1px solid rgba($neon-cyan, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: $neon-cyan;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .username-text {
+      font-weight: 600;
+      color: #ffffff;
+    }
+  }
+
+  .td-monto {
+    color: $text-light;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+  }
+
+  .td-fecha {
+    color: $text-muted;
+    font-size: 0.82rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  // Badges de montos apostados
+  .monto-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    display: inline-block;
+
+    &.diario {
+      background: rgba($yellow-warn, 0.08);
+      color: #fbc531;
+      border: 1px solid rgba($yellow-warn, 0.2);
+    }
+
+    &.mensual {
+      background: rgba($neon-purple, 0.1);
+      color: #b388ff;
+      border: 1px solid rgba($neon-purple, 0.25);
+    }
+  }
+
+  .td-actions {
+    .btn-detalle {
+      background: #1f1f2e;
+      color: #fff;
+      border: 1px solid $border-color;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        background: $border-hover;
+        border-color: rgba($neon-cyan, 0.4);
+        box-shadow: 0 0 10px rgba($neon-cyan, 0.12);
+      }
+    }
+  }
+}
+
+// Estado vacío
+.empty-state {
+  text-align: center;
+  padding: 3.5rem;
+  color: $text-muted;
+
+  .empty-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.8rem;
+    opacity: 0.4;
+  }
+
+  p { font-size: 0.9rem; font-style: italic; }
+}
+
+// ============================================
+// MODALES — Base compartida
+// ============================================
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+
+  &.modal-overlay--top {
+    z-index: 1100;
+    background: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.modal-panel {
+  background: #13131e;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba($neon-cyan, 0.05);
+  animation: slideUp 0.25s ease;
+  overflow: hidden;
+
+  &.modal-panel--sm {
+    max-width: 380px;
+  }
+}
+
+// ── Header modal ──
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.8rem 1.2rem;
+  border-bottom: 1px solid $border-color;
+
+  .modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .modal-icon {
+    font-size: 1.4rem;
+    font-style: normal;
+  }
+
+  .modal-avatar {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, rgba($neon-cyan, 0.15), rgba($neon-purple, 0.15));
+    border: 1px solid rgba($neon-cyan, 0.25);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: $neon-cyan;
+    flex-shrink: 0;
+  }
+
+  .modal-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .modal-subtitle {
+    font-size: 0.78rem;
+    color: $text-muted;
+    display: block;
+    margin-top: 0.1rem;
+  }
+
+  .modal-close {
+    background: rgba(#fff, 0.04);
+    border: 1px solid $border-color;
+    color: $text-muted;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+    &:hover {
+      background: rgba($neon-pink, 0.1);
+      color: $neon-pink;
+      border-color: rgba($neon-pink, 0.3);
+    }
+  }
+}
+
+// ── Body modal ──
+.modal-body {
+  padding: 1.5rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-label {
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: $text-muted;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.form-input {
+  background: #09090e;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+
+  &::placeholder { color: darken($text-muted, 15%); }
+
+  &:focus {
+    outline: none;
+    border-color: $neon-cyan;
+    box-shadow: 0 0 10px rgba($neon-cyan, 0.18);
+  }
+
+  // Quitar flechas en inputs tipo number
+  &[type="number"]::-webkit-inner-spin-button,
+  &[type="number"]::-webkit-outer-spin-button {
+    opacity: 0.3;
+  }
+}
+
+// Texto de confirmación
+.confirm-text {
+  color: $text-muted;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin: 0;
+
+  strong { color: #ffffff; }
+}
+
+// ── Footer modal ──
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.8rem 1.5rem;
+  border-top: 1px solid $border-color;
+  gap: 0.8rem;
+
+  .footer-right {
+    display: flex;
+    gap: 0.8rem;
+    margin-left: auto;
+  }
+}
+
+// ── Botones del modal ──
+.btn-cancel {
+  background: transparent;
+  border: 1px solid $border-color;
+  color: $text-muted;
+  padding: 0.6rem 1.3rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: $text-muted;
+    color: #ffffff;
+  }
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, $neon-purple-light, $neon-purple-dark);
+  border: none;
+  color: #ffffff;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba($neon-purple-light, 0.4);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid rgba($neon-pink, 0.4);
+  color: $neon-pink;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    background: rgba($neon-pink, 0.08);
+    box-shadow: 0 0 12px rgba($neon-pink, 0.2);
+  }
+}
+
+.btn-danger-solid {
+  background: linear-gradient(135deg, #c0392b, #96281b);
+  border: none;
+  color: #ffffff;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(#c0392b, 0.4);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+// ============================================
+// Animaciones
+// ============================================
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}

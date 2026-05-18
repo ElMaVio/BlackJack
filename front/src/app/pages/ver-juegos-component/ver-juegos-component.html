@@ -1,0 +1,236 @@
+<div class="dashboard-container">
+
+  <div class="header-section">
+    <span class="badge-cyber">⚡ PANEL DE JUEGOS</span>
+    <h1 class="main-title">Gestión de <span>Juegos</span></h1>
+    <p class="subtitle">Control de catálogo, categorías y proveedores en tiempo real</p>
+  </div>
+
+  <div class="loading-wrapper" *ngIf="cargando">
+    <div class="cyber-spinner"></div>
+    <p class="loading-text">CARGANDO CARTELERA...</p>
+  </div>
+
+  <div class="content-fade" *ngIf="!cargando">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-number">{{ juegos.length }}</span>
+        <span class="stat-label">JUEGOS TOTALES</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ totalActivos }}</span>
+        <span class="stat-label">JUEGOS ACTIVOS</span>
+      </div>
+    </div>
+
+    <div class="toolbar-section">
+      <div class="search-box">
+        <i class="search-icon">🔍</i>
+        <input
+          type="text"
+          [(ngModel)]="busqueda"
+          (input)="aplicarFiltros()"
+          placeholder="Buscar por nombre, tipo o proveedor...">
+      </div>
+      <button class="btn-primary" (click)="abrirModalCrear()">+ Nuevo Juego</button>
+    </div>
+
+    <div class="table-container">
+      <table class="cyber-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>JUEGO / CATEGORÍA</th>
+            <th>PROVEEDOR</th>
+            <th>ESTADO</th>
+            <th>ACCIONES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let juego of juegosFiltrados">
+            <td class="id-column">#{{ juego.idJuego }}</td>
+            <td>
+              <div class="game-info">
+                <div class="game-avatar">{{ juego.nombre.charAt(0) }}</div>
+                <div>
+                  <div class="game-name">{{ juego.nombre }}</div>
+                  <div class="game-type">{{ juego.tipo }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="provider-column">{{ juego.proveedor }}</td>
+            <td>
+              <span class="status-tag" [ngClass]="{
+                'status-activo': juego.estado === 'ACTIVO',
+                'status-mantenimiento': juego.estado === 'MANTENIMIENTO',
+                'status-inactivo': juego.estado === 'INACTIVO'
+              }">{{ juego.estado }}</span>
+            </td>
+            <td>
+              <button class="btn-manage" (click)="abrirDetalle(juego)">Gestionar</button>
+            </td>
+          </tr>
+          <tr *ngIf="juegosFiltrados.length === 0">
+            <td colspan="5" class="empty-table-message">
+              No se encontraron juegos que coincidan con la búsqueda.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- MODAL: CREAR JUEGO               -->
+<!-- ================================ -->
+<div class="modal-overlay" *ngIf="mostrarModalCrear" (click)="cerrarModalCrear()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span class="modal-icon">🎮</span>
+        <h2 class="modal-title">Nuevo Juego</h2>
+      </div>
+      <button class="modal-close" (click)="cerrarModalCrear()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nombre del Juego</label>
+        <input
+          class="form-input"
+          type="text"
+          [(ngModel)]="nuevoJuego.nombre"
+          placeholder="Ej: Ruleta Americana">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo / Categoría</label>
+        <input
+          class="form-input"
+          type="text"
+          [(ngModel)]="nuevoJuego.tipo"
+          placeholder="Ej: Ruleta, Slots, Póker...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Proveedor</label>
+        <input
+          class="form-input"
+          type="text"
+          [(ngModel)]="nuevoJuego.proveedor"
+          placeholder="Ej: Evolution, Pragmatic...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estado</label>
+        <select class="form-select" [(ngModel)]="nuevoJuego.estado">
+          <option value="ACTIVO">ACTIVO</option>
+          <option value="INACTIVO">INACTIVO</option>
+          <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cerrarModalCrear()">Cancelar</button>
+      <button class="btn-confirm" (click)="crear()">Crear Juego</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- MODAL: VER / EDITAR / ELIMINAR   -->
+<!-- ================================ -->
+<div class="modal-overlay" *ngIf="mostrarModal && juegoSeleccionado" (click)="cerrarModal()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-avatar">{{ juegoSeleccionado.nombre?.charAt(0) }}</div>
+        <div>
+          <h2 class="modal-title">{{ juegoSeleccionado.nombre }}</h2>
+          <span class="modal-subtitle">#{{ juegoSeleccionado.idJuego }}</span>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nombre del Juego</label>
+        <input
+          class="form-input"
+          type="text"
+          [(ngModel)]="juegoSeleccionado.nombre"
+          placeholder="Nombre">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo / Categoría</label>
+        <input
+          class="form-input"
+          type="text"
+          [(ngModel)]="juegoSeleccionado.tipo"
+          placeholder="Tipo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Proveedor</label>
+        <input
+          class="form-input"
+          type="text"
+          [(ngModel)]="juegoSeleccionado.proveedor"
+          placeholder="Proveedor">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estado</label>
+        <select class="form-select" [(ngModel)]="juegoSeleccionado.estado">
+          <option value="ACTIVO">ACTIVO</option>
+          <option value="INACTIVO">INACTIVO</option>
+          <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-danger" (click)="confirmarEliminar()">🗑 Eliminar</button>
+      <div class="footer-right">
+        <button class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-confirm" (click)="editar()">Guardar Cambios</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- MODAL: CONFIRMAR ELIMINACIÓN     -->
+<!-- ================================ -->
+<div class="modal-overlay modal-overlay--top" *ngIf="mostrarModalEliminar" (click)="cancelarEliminar()">
+  <div class="modal-panel modal-panel--sm" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span class="modal-icon">⚠️</span>
+        <h2 class="modal-title">Confirmar eliminación</h2>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <p class="confirm-text">
+        ¿Estás seguro de que deseas eliminar el juego
+        <strong>{{ juegoSeleccionado?.nombre }}</strong>?
+        Esta acción no se puede deshacer.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cancelarEliminar()">Cancelar</button>
+      <button class="btn-danger-solid" (click)="eliminar(juegoSeleccionado.idJuego)">Sí, eliminar</button>
+    </div>
+
+  </div>
+</div>

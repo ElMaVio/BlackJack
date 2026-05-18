@@ -1,0 +1,285 @@
+// Variables Cyber-Casino
+$bg-dark: #0a0b10;
+$panel-bg: rgba(20, 22, 37, 0.6);
+$border-color: rgba(255, 255, 255, 0.08);
+$accent-neon: #8b5cf6;
+$text-bright: #ffffff;
+$text-muted: #94a3b8;
+
+// Colores de Estado
+$color-envivo: #ef4444;
+$color-programado: #3b82f6;
+$color-finalizado: #64748b;
+
+// ─── Wrapper ────────────────────────────────────────────────────────────────
+.usuarios-wrapper {
+  background-color: $bg-dark;
+  min-height: 100vh;
+  color: $text-bright;
+  font-family: 'Poppins', sans-serif;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+// ─── Orbes de fondo ─────────────────────────────────────────────────────────
+.bg-orb {
+  position: absolute; border-radius: 50%; filter: blur(140px);
+  z-index: 0; opacity: 0.35; pointer-events: none;
+}
+.orb-1 { width: 450px; height: 450px; background: $accent-neon; top: -10%; left: -5%; }
+.orb-2 { width: 400px; height: 400px; background: #3b82f6; bottom: -10%; right: -5%; }
+.orb-3 { width: 300px; height: 300px; background: #ec4899; top: 30%; left: 40%; }
+
+.usuarios-header, .main-content { position: relative; z-index: 1; max-width: 1250px; margin: 0 auto; }
+
+// ─── Header ─────────────────────────────────────────────────────────────────
+.usuarios-header {
+  margin-bottom: 3.5rem;
+
+  .header-badge {
+    background: rgba($accent-neon, 0.15);
+    border: 1px solid rgba($accent-neon, 0.3);
+    color: #c084fc; padding: 0.5rem 1.2rem; border-radius: 30px;
+    display: inline-block; font-size: 0.85rem; font-weight: 500; margin-bottom: 1rem;
+  }
+
+  .main-title {
+    font-size: 3.5rem; font-weight: 800; line-height: 1; margin-bottom: 0.8rem;
+    .title-accent {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .subtitle { color: $text-muted; font-size: 1.1rem; }
+
+  .stats-row {
+    margin-top: 2rem; background: $panel-bg; backdrop-filter: blur(12px);
+    border: 1px solid $border-color; padding: 1.5rem; border-radius: 20px; width: fit-content;
+    .stat-number { font-size: 2rem; font-weight: 700; color: white; display: block; }
+    .stat-label { font-size: 0.75rem; color: $text-muted; text-transform: uppercase; letter-spacing: 1px; }
+  }
+}
+
+// ─── Toolbar ────────────────────────────────────────────────────────────────
+.toolbar {
+  display: flex; justify-content: space-between; align-items: center; gap: 2rem; margin-bottom: 2.5rem;
+
+  .search-box {
+    position: relative; flex: 1; max-width: 500px;
+    .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); opacity: 0.5; }
+    .search-input {
+      width: 100%; background: $panel-bg; border: 1px solid $border-color;
+      padding: 1rem 1rem 1rem 3.2rem; border-radius: 15px; color: white; transition: all 0.3s;
+      &:focus { outline: none; border-color: $accent-neon; box-shadow: 0 0 20px rgba($accent-neon, 0.2); }
+    }
+  }
+
+  .btn-crear {
+    background: linear-gradient(135deg, $accent-neon, #6d28d9);
+    color: white; border: none; padding: 1rem 2rem; border-radius: 15px;
+    font-weight: 600; cursor: pointer; transition: all 0.3s;
+    &:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba($accent-neon, 0.5); }
+  }
+}
+
+// ─── Tabla ───────────────────────────────────────────────────────────────────
+.table-container {
+  background: $panel-bg; backdrop-filter: blur(20px);
+  border: 1px solid $border-color; border-radius: 24px; overflow: hidden;
+}
+
+.usuarios-table {
+  width: 100%; border-collapse: collapse;
+
+  th {
+    padding: 1.5rem; color: $text-muted; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 1px solid $border-color; text-align: left;
+  }
+
+  .table-row {
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    animation: fadeInUp 0.5s forwards; opacity: 0;
+    &:hover { background: rgba(255,255,255,0.03); }
+  }
+
+  td { padding: 1.5rem; vertical-align: middle; }
+  .td-id { color: $text-muted; font-family: 'Courier New', monospace; }
+
+  .td-usuario {
+    display: flex; align-items: center; gap: 1rem;
+    .avatar {
+      width: 45px; height: 45px;
+      background: linear-gradient(135deg, #334155, #1e293b);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800;
+    }
+    .username-text { font-weight: 600; color: white; font-size: 1rem; display: block; }
+    .display-block { display: block; font-size: 0.8rem; color: $text-muted; }
+  }
+
+  .matchup {
+    display: flex; align-items: center; gap: 0.8rem; font-weight: 600;
+    .vs { color: $accent-neon; font-size: 0.7rem; background: rgba($accent-neon, 0.1); padding: 2px 6px; border-radius: 4px; }
+    .team { color: #e2e8f0; }
+  }
+
+  .role-badge {
+    padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+    &.admin    { background: rgba($color-envivo, 0.15);     color: #f87171; border: 1px solid rgba($color-envivo, 0.3);     box-shadow: 0 0 10px rgba($color-envivo, 0.2); }
+    &.jugador  { background: rgba($color-programado, 0.15); color: #60a5fa; border: 1px solid rgba($color-programado, 0.3); }
+    &.bloqueado{ background: rgba($color-finalizado, 0.1);  color: #94a3b8; border: 1px solid $border-color; }
+  }
+
+  .btn-detalle {
+    background: rgba(255,255,255,0.05); border: 1px solid $border-color;
+    color: white; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; transition: 0.3s;
+    &:hover { background: white; color: $bg-dark; }
+  }
+}
+
+.empty-state {
+  text-align: center; padding: 4rem;
+  .empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+  p { color: $text-muted; }
+}
+
+// ─── Loading ─────────────────────────────────────────────────────────────────
+.loading-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 6rem 0; gap: 1.5rem;
+}
+.spinner-ring {
+  width: 48px; height: 48px;
+  border: 3px solid rgba($accent-neon, 0.2);
+  border-top-color: $accent-neon;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.loading-text { color: $text-muted; font-size: 0.95rem; }
+
+// ─── Modales ─────────────────────────────────────────────────────────────────
+.modal-backdrop {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+
+.modal-panel {
+  background: #111936;
+  border: 1px solid $border-color;
+  width: 90%; max-width: 580px;
+  border-radius: 30px; padding: 2.5rem;
+  position: relative; max-height: 90vh; overflow-y: auto;
+  animation: modalScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  // Scrollbar estilizado
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba($accent-neon, 0.4); border-radius: 4px; }
+}
+
+.modal-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: rgba(255,255,255,0.07); border: 1px solid $border-color;
+  color: $text-muted; width: 36px; height: 36px; border-radius: 10px;
+  cursor: pointer; font-size: 0.85rem; transition: 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  &:hover { background: rgba(255,255,255,0.15); color: white; }
+}
+
+.modal-header {
+  display: flex; align-items: center; gap: 1.2rem; margin-bottom: 2rem;
+
+  .avatar.lg {
+    width: 60px; height: 60px; font-size: 1.6rem; flex-shrink: 0;
+    background: linear-gradient(135deg, $accent-neon, #3b82f6);
+    border-radius: 18px; display: flex; align-items: center; justify-content: center; font-weight: 800;
+  }
+
+  .modal-icon-crear {
+    width: 60px; height: 60px; font-size: 1.8rem; flex-shrink: 0;
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  }
+
+  .modal-title {
+    font-size: 1.6rem; font-weight: 700; line-height: 1.2;
+    .modal-id { color: $text-muted; font-size: 1rem; font-weight: 400; margin-left: 0.3rem; }
+  }
+  .modal-subtitle { color: $text-muted; font-size: 0.9rem; margin-top: 0.3rem; }
+}
+
+// ─── Formulario del modal ────────────────────────────────────────────────────
+.modal-form { display: flex; flex-direction: column; gap: 1.2rem; }
+
+.form-group { display: flex; flex-direction: column; }
+
+.form-label {
+  font-size: 0.78rem; font-weight: 600; color: $text-muted;
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 0.5rem;
+}
+
+.form-input {
+  background: rgba(0,0,0,0.3); border: 1px solid $border-color;
+  padding: 0.9rem 1rem; border-radius: 12px; color: white;
+  font-family: 'Poppins', sans-serif; font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    border-color: $accent-neon; outline: none;
+    box-shadow: 0 0 0 3px rgba($accent-neon, 0.12);
+  }
+  &::placeholder { color: rgba(255,255,255,0.2); }
+}
+
+.row-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+
+.select-cyber {
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b5cf6' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center;
+  padding-right: 2.5rem;
+  option { background: #111936; color: white; }
+}
+
+// ─── Acciones del modal ──────────────────────────────────────────────────────
+.modal-actions {
+  display: flex; gap: 1rem; margin-top: 1.5rem;
+
+  button {
+    flex: 1; padding: 1rem; border-radius: 12px;
+    font-weight: 700; cursor: pointer; border: none;
+    font-family: 'Poppins', sans-serif; font-size: 0.95rem; transition: 0.3s;
+  }
+
+  .btn-guardar {
+    background: white; color: $bg-dark;
+    &:hover { background: #cbd5e1; transform: translateY(-2px); }
+    &.full { flex: 1; background: linear-gradient(135deg, $accent-neon, #6d28d9); color: white;
+      &:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba($accent-neon, 0.4); }
+    }
+  }
+
+  .btn-eliminar {
+    background: rgba($color-envivo, 0.1); color: #f87171;
+    border: 1px solid rgba($color-envivo, 0.2) !important;
+    &:hover { background: $color-envivo; color: white; transform: translateY(-2px); }
+  }
+}
+
+// ─── Animaciones ─────────────────────────────────────────────────────────────
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

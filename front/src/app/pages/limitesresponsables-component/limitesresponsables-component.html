@@ -1,0 +1,241 @@
+<div class="limites-wrapper">
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- HEADER -->
+  <header class="limites-header">
+    <div class="header-badge">🛡️ Control de Juego Responsable</div>
+    <h1 class="main-title">
+      Límites de<br>
+      <span class="title-accent">Responsabilidad</span>
+    </h1>
+    <p class="subtitle">Monitoreo y restricción de montos apostados</p>
+
+    <div class="stats-row" *ngIf="!cargando">
+      <div class="stat-item">
+        <span class="stat-number">{{ limites.length }}</span>
+        <span class="stat-label">Usuarios con Límites</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOADING -->
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner-ring"></div>
+    <p class="loading-text">Cargando restricciones<span class="dots">...</span></p>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content" *ngIf="!cargando">
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Buscar por ID de usuario..."
+          [(ngModel)]="busqueda"
+          (input)="filtrar()"/>
+      </div>
+      <button class="btn-crear" (click)="abrirModalCrear()">
+        <span>+</span> Asignar Límite
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table class="limites-table">
+        <thead>
+          <tr>
+            <th>ID Usuario</th>
+            <th>Límite Diario</th>
+            <th>Límite Mensual</th>
+            <th>Apostado Diario</th>
+            <th>Apostado Mensual</th>
+            <th>Última Actualización</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let limite of limitesFiltrados; let i = index"
+            class="table-row"
+            [style.animation-delay]="i * 0.05 + 's'">
+
+            <td class="td-usuario">
+              <div class="avatar">#</div>
+              <span class="username-text">Usuario {{ limite.usuariosIdUsuario }}</span>
+            </td>
+            <td class="td-monto">${{ limite.limiteDiario | number:'1.2-2' }}</td>
+            <td class="td-monto">${{ limite.limiteMensual | number:'1.2-2' }}</td>
+            <td>
+              <span class="monto-badge diario">${{ limite.montoApostadoDiario | number:'1.2-2' }}</span>
+            </td>
+            <td>
+              <span class="monto-badge mensual">${{ limite.montoApostadoMensual | number:'1.2-2' }}</span>
+            </td>
+            <td class="td-fecha">{{ limite.fechaActualizacion | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="td-actions">
+              <button class="btn-detalle" (click)="abrirDetalle(limite)">Gestionar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty-state" *ngIf="limitesFiltrados.length === 0">
+        <span class="empty-icon">🛡️</span>
+        <p>No se encontraron registros de límites</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+
+<!-- ================================ -->
+<!-- MODAL: EDITAR LÍMITE             -->
+<!-- ================================ -->
+<div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="modal-panel" (click)="$event.stopPropagation()" *ngIf="limiteSeleccionado">
+
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-avatar">{{ limiteSeleccionado.usuariosIdUsuario }}</div>
+        <div>
+          <h2 class="modal-title">Usuario {{ limiteSeleccionado.usuariosIdUsuario }}</h2>
+          <span class="modal-subtitle">Modificar límites de juego</span>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Límite Máximo Diario ($)</label>
+        <input
+          class="form-input"
+          type="number"
+          [(ngModel)]="limiteSeleccionado.limiteDiario"
+          placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Límite Máximo Mensual ($)</label>
+        <input
+          class="form-input"
+          type="number"
+          [(ngModel)]="limiteSeleccionado.limiteMensual"
+          placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Monto Apostado Hoy ($)</label>
+        <input
+          class="form-input"
+          type="number"
+          [(ngModel)]="limiteSeleccionado.montoApostadoDiario"
+          placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Monto Apostado Mes ($)</label>
+        <input
+          class="form-input"
+          type="number"
+          [(ngModel)]="limiteSeleccionado.montoApostadoMensual"
+          placeholder="0.00">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-danger" (click)="confirmarEliminar()">🗑 Remover</button>
+      <div class="footer-right">
+        <button class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-confirm" (click)="editar()">💾 Actualizar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- MODAL: ASIGNAR NUEVO LÍMITE      -->
+<!-- ================================ -->
+<div class="modal-overlay" *ngIf="mostrarModalCrear" (click)="cerrarModalCrear()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span class="modal-icon">🛡️</span>
+        <div>
+          <h2 class="modal-title">Asignar Nuevos Límites</h2>
+          <span class="modal-subtitle">Establecer topes de apuestas para un jugador</span>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarModalCrear()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ID del Usuario</label>
+        <input
+          class="form-input"
+          type="number"
+          placeholder="Ej: 1"
+          [(ngModel)]="nuevoLimite.usuariosIdUsuario">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Límite Diario ($)</label>
+        <input
+          class="form-input"
+          type="number"
+          placeholder="Ej: 500"
+          [(ngModel)]="nuevoLimite.limiteDiario">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Límite Mensual ($)</label>
+        <input
+          class="form-input"
+          type="number"
+          placeholder="Ej: 2000"
+          [(ngModel)]="nuevoLimite.limiteMensual">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cerrarModalCrear()">Cancelar</button>
+      <button class="btn-confirm" (click)="crear()">✚ Activar Restricciones</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- MODAL: CONFIRMAR ELIMINACIÓN     -->
+<!-- ================================ -->
+<div class="modal-overlay modal-overlay--top" *ngIf="mostrarModalEliminar" (click)="cancelarEliminar()">
+  <div class="modal-panel modal-panel--sm" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span class="modal-icon">⚠️</span>
+        <h2 class="modal-title">Confirmar eliminación</h2>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <p class="confirm-text">
+        ¿Estás seguro de que deseas remover los límites del
+        <strong>Usuario {{ limiteSeleccionado?.usuariosIdUsuario }}</strong>?
+        Esta acción no se puede deshacer.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cancelarEliminar()">Cancelar</button>
+      <button class="btn-danger-solid" (click)="eliminar(limiteSeleccionado.idLimite)">Sí, remover</button>
+    </div>
+
+  </div>
+</div>

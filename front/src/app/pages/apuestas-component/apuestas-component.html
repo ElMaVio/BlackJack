@@ -1,0 +1,193 @@
+<div class="wallet-wrapper">
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <header class="wallet-header">
+    <div class="header-badge">🎰 Sport Bet Slip System</div>
+    <h1 class="main-title">
+      Mis<br>
+      <span class="title-accent">Apuestas</span>
+    </h1>
+    <p class="subtitle">Historial y estado de juego en vivo</p>
+
+    <div class="stats-row" *ngIf="!cargando">
+      <div class="stat-item">
+        <span class="stat-number">${{ totalApostado | number:'1.0-0' }}</span>
+        <span class="stat-label">Total Invertido</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number text-green">${{ totalPremiosGanados | number:'1.0-0' }}</span>
+        <span class="stat-label">Premios Cobrados</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number text-yellow">{{ apuestasPendientes }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner-ring"></div>
+    <p class="loading-text">Procesando jugadas<span class="dots">...</span></p>
+  </div>
+
+  <main class="main-content" *ngIf="!cargando">
+
+    <div class="filters-bar">
+      <button class="filter-btn" [class.active]="filtroActivo === 'todas'" (click)="setFiltro('todas')">Todas</button>
+      <button class="filter-btn" [class.active]="filtroActivo === 'pendiente'" (click)="setFiltro('pendiente')">Pendientes</button>
+      <button class="filter-btn" [class.active]="filtroActivo === 'ganada'" (click)="setFiltro('ganada')">Ganadas</button>
+      <button class="filter-btn" [class.active]="filtroActivo === 'perdida'" (click)="setFiltro('perdida')">Perdidas</button>
+
+      <button class="filter-btn" style="background: var(--pink-hot); color: white; border: none; font-weight: bold;" (click)="abrirModalCrear()">
+        + Lanzar Apuesta
+      </button>
+    </div>
+
+    <div class="wallets-grid">
+      <div
+        class="wallet-card"
+        *ngFor="let apuesta of apuestasFiltradas; let i = index"
+        [class.pendiente]="apuesta.estado === 'pendiente'"
+        [class.ganada]="apuesta.estado === 'ganada'"
+        [class.perdida]="apuesta.estado === 'perdida'"
+        [style.animation-delay]="i * 0.1 + 's'"
+        (click)="abrirDetalle(apuesta)">
+
+        <div class="card-top">
+          <div class="currency-badge">{{ apuesta.tipo_apuesta | uppercase }}</div>
+          <div class="status-badge" [class.activo]="apuesta.estado === 'ganada'" [class.pendiente-badge]="apuesta.estado === 'pendiente'" [class.bloqueado]="apuesta.estado === 'perdida'">
+            <span class="status-dot"></span>
+            {{ apuesta.estado | titlecase }}
+          </div>
+        </div>
+
+        <div class="saldo-section">
+          <p class="saldo-label">Monto Jugado</p>
+          <h2 class="saldo-amount">
+            <span class="currency-symbol">$</span>{{ apuesta.monto_total | number:'1.0-2' }}
+          </h2>
+
+          <div class="saldo-bloqueado" [class.retorno-ganado]="apuesta.estado === 'ganada'">
+            <span>🔥 Retorno Potencial: </span>
+            <strong>${{ apuesta.ganancia_potencial | number:'1.0-2' }}</strong>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-meta">
+            <span class="meta-label">Ticket ID</span>
+            <span class="meta-value">#{{ apuesta.id_apuesta }}</span>
+          </div>
+          <div class="card-meta">
+            <span class="meta-label">Wallet ID</span>
+            <span class="meta-value">#{{ apuesta.id_billetera }}</span>
+          </div>
+          <div class="card-meta">
+            <span class="meta-label">Fecha</span>
+            <span class="meta-value">{{ formatearFecha(apuesta.fecha_creacion) }}</span>
+          </div>
+        </div>
+
+        <div class="card-hover-cta">
+          <span>Gestionar / Resolver Ticket →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="apuestasFiltradas.length === 0">
+      <span class="empty-icon">🎫</span>
+      <p>No registras apuestas en este estado</p>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" *ngIf="mostrarModalCrear" (click)="cerrarModalCrear()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarModalCrear()">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-currency">NEW SLIP</div>
+        <h2 class="modal-title">Registrar Nueva Apuesta</h2>
+      </div>
+
+      <div class="modal-details" style="margin-top: 15px;">
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">ID Usuario</span>
+          <input type="number" [(ngModel)]="nuevaApuesta.id_usuario" class="modal-input" placeholder="Ej: 1001">
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">ID Billetera Operación</span>
+          <input type="number" [(ngModel)]="nuevaApuesta.id_billetera" class="modal-input" placeholder="Ej: 1">
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Tipo de Apuesta</span>
+          <select [(ngModel)]="nuevaApuesta.tipo_apuesta" class="modal-input">
+            <option value="simple">Simple</option>
+            <option value="combinada">Combinada</option>
+          </select>
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Monto Total a Postear ($)</span>
+          <input type="number" [(ngModel)]="nuevaApuesta.monto_total" class="modal-input" placeholder="0.00">
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Ganancia Potencial Estimada ($)</span>
+          <input type="number" [(ngModel)]="nuevaApuesta.ganancia_potencial" class="modal-input" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="modal-actions" style="display: flex; gap: 10px;">
+        <button class="btn-eliminar" style="background: rgba(74, 222, 128, 0.1); border-color: var(--green); color: var(--green);" (click)="crear()">
+          🎲 Confirmar Jugada
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()" *ngIf="apuestaSeleccionada">
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-currency">{{ apuestaSeleccionada.tipo_apuesta | uppercase }}</div>
+        <h2 class="modal-title">Editar Ticket #{{ apuestaSeleccionada.id_apuesta }}</h2>
+      </div>
+
+      <div class="modal-details">
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Estado del Evento (Resolución)</span>
+          <select [(ngModel)]="apuestaSeleccionada.estado" class="modal-input">
+            <option value="pendiente">Pendiente</option>
+            <option value="ganada">Ganada (Liberar Fondos)</option>
+            <option value="perdida">Perdida (Casa Recauda)</option>
+          </select>
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Monto Jugado ($)</span>
+          <input type="number" [(ngModel)]="apuestaSeleccionada.monto_total" class="modal-input">
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Premio ($)</span>
+          <input type="number" [(ngModel)]="apuestaSeleccionada.ganancia_potencial" class="modal-input">
+        </div>
+        <div class="detail-row" style="padding: 5px 0;">
+          <span class="detail-key">Emisión:</span>
+          <span class="detail-val" style="font-size: 11px;">{{ formatearFecha(apuestaSeleccionada.fecha_creacion) }}</span>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn-eliminar" style="background: rgba(168, 85, 247, 0.15); border-color: var(--purple-glow); color: var(--purple-glow);" (click)="editar()">
+          💾 Guardar Cambios en Ticket
+        </button>
+        <button class="btn-eliminar" (click)="eliminar(apuestaSeleccionada.id_apuesta)">
+          🗑️ Eliminar Registro
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

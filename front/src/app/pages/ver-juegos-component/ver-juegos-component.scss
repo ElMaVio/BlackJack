@@ -1,0 +1,619 @@
+// ============================================
+// Variables de Color Cyberpunk/Casino
+// ============================================
+$bg-dark: #09090e;
+$bg-card: #12121a;
+$neon-pink: #ff2a74;
+$neon-purple: #8a2be2;
+$neon-purple-light: #5c2299;
+$neon-purple-dark: #3b1166;
+$text-muted: #808090;
+$text-light: #e0e0e0;
+$border-color: #1f1f2e;
+$border-hover: #2a2a3d;
+$green-active: #28a745;
+$yellow-mant: #ffc107;
+
+// ============================================
+// Contenedor Principal
+// ============================================
+.dashboard-container {
+  min-height: 100vh;
+  background-color: $bg-dark;
+  color: #ffffff;
+  padding: 3rem 2rem;
+  font-family: 'Poppins', sans-serif;
+  background-image:
+    radial-gradient(ellipse at 10% 20%, rgba($neon-purple, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba($neon-pink, 0.04) 0%, transparent 50%);
+}
+
+// ============================================
+// Encabezado
+// ============================================
+.header-section {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  .badge-cyber {
+    background: linear-gradient(135deg, $neon-pink, $neon-purple);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: inline-block;
+    box-shadow: 0 0 15px rgba($neon-pink, 0.25);
+  }
+
+  .main-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-top: 1rem;
+    letter-spacing: -1px;
+
+    span {
+      background: linear-gradient(to right, #ffffff, $neon-pink);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .subtitle {
+    color: $text-muted;
+    font-size: 1rem;
+    margin-top: -0.5rem;
+  }
+}
+
+// ============================================
+// Loading Spinner
+// ============================================
+.loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5rem;
+
+  .cyber-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba($neon-pink, 0.1);
+    border-radius: 50%;
+    border-top-color: $neon-pink;
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  .loading-text {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    color: $text-muted;
+  }
+}
+
+// ============================================
+// Stats / KPIs
+// ============================================
+.stats-grid {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  max-width: 400px;
+
+  .stat-card {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    padding: 1.5rem;
+    border-radius: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s, box-shadow 0.3s;
+
+    &:hover {
+      border-color: rgba($neon-purple, 0.4);
+      box-shadow: 0 0 20px rgba($neon-purple, 0.08);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: $text-muted;
+      letter-spacing: 1px;
+      margin-top: 0.2rem;
+    }
+  }
+}
+
+// ============================================
+// Toolbar
+// ============================================
+.toolbar-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 450px;
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-muted;
+      font-style: normal;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      background: $bg-card;
+      border: 1px solid $border-color;
+      padding: 0.8rem 1rem 0.8rem 2.8rem;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      box-sizing: border-box;
+
+      &::placeholder { color: $text-muted; }
+
+      &:focus {
+        outline: none;
+        border-color: $neon-purple;
+        box-shadow: 0 0 12px rgba($neon-purple, 0.25);
+      }
+    }
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, $neon-purple-light, $neon-purple-dark);
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba($neon-purple-light, 0.45);
+    }
+
+    &:active { transform: translateY(0); }
+  }
+}
+
+// ============================================
+// Tabla Cyber
+// ============================================
+.table-container {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.cyber-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  thead { background: rgba(#fff, 0.02); }
+
+  th {
+    padding: 1.2rem 1.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $text-muted;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid $border-color;
+  }
+
+  tbody tr {
+    transition: background 0.2s;
+
+    &:hover { background: rgba(#fff, 0.025); }
+    &:last-child td { border-bottom: none; }
+  }
+
+  td {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid $border-color;
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+
+  .id-column {
+    color: $text-muted;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+  }
+
+  .game-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .game-avatar {
+      width: 40px;
+      height: 40px;
+      background: rgba(#fff, 0.05);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: $text-muted;
+      border: 1px solid $border-color;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .game-name { font-weight: 600; color: #ffffff; font-size: 0.9rem; }
+    .game-type { font-size: 0.78rem; color: $text-muted; margin-top: 0.1rem; }
+  }
+
+  .provider-column { color: $text-light; font-size: 0.88rem; }
+
+  .status-tag {
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: inline-block;
+
+    &.status-activo {
+      background: rgba($green-active, 0.1);
+      color: #4cd137;
+      border: 1px solid rgba($green-active, 0.25);
+    }
+
+    &.status-mantenimiento {
+      background: rgba($yellow-mant, 0.1);
+      color: #fbc531;
+      border: 1px solid rgba($yellow-mant, 0.25);
+    }
+
+    &.status-inactivo {
+      background: rgba($neon-pink, 0.1);
+      color: $neon-pink;
+      border: 1px solid rgba($neon-pink, 0.25);
+    }
+  }
+
+  .btn-manage {
+    background: #1f1f2e;
+    color: #fff;
+    border: 1px solid $border-color;
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      background: $border-hover;
+      border-color: rgba($neon-purple, 0.5);
+      box-shadow: 0 0 10px rgba($neon-purple, 0.15);
+    }
+
+    &:active { transform: scale(0.98); }
+  }
+
+  .empty-table-message {
+    text-align: center;
+    color: $text-muted;
+    padding: 3rem;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+}
+
+// ============================================
+// MODALES — Base compartida
+// ============================================
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+
+  // El modal de confirmación se apila encima
+  &.modal-overlay--top {
+    z-index: 1100;
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.modal-panel {
+  background: #13131e;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba($neon-purple, 0.08);
+  animation: slideUp 0.25s ease;
+  overflow: hidden;
+
+  &.modal-panel--sm {
+    max-width: 380px;
+  }
+}
+
+// ── Header del modal ──
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.8rem 1.2rem;
+  border-bottom: 1px solid $border-color;
+
+  .modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .modal-icon {
+    font-size: 1.4rem;
+    font-style: normal;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .modal-subtitle {
+    font-size: 0.78rem;
+    color: $text-muted;
+    font-family: 'Courier New', monospace;
+    display: block;
+    margin-top: 0.1rem;
+  }
+
+  .modal-avatar {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, $neon-purple-light, $neon-purple-dark);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fff;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .modal-close {
+    background: rgba(#fff, 0.05);
+    border: 1px solid $border-color;
+    color: $text-muted;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+      background: rgba($neon-pink, 0.1);
+      color: $neon-pink;
+      border-color: rgba($neon-pink, 0.3);
+    }
+  }
+}
+
+// ── Body del modal ──
+.modal-body {
+  padding: 1.5rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $text-muted;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.form-input,
+.form-select {
+  background: #09090e;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+
+  &::placeholder { color: darken($text-muted, 15%); }
+
+  &:focus {
+    outline: none;
+    border-color: $neon-purple;
+    box-shadow: 0 0 10px rgba($neon-purple, 0.2);
+  }
+}
+
+.form-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23808090' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+
+  option { background: #13131e; }
+}
+
+// Texto de confirmación en modal eliminar
+.confirm-text {
+  color: $text-muted;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+
+  strong { color: #ffffff; }
+}
+
+// ── Footer del modal ──
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.8rem 1.5rem;
+  border-top: 1px solid $border-color;
+  gap: 0.8rem;
+
+  .footer-right {
+    display: flex;
+    gap: 0.8rem;
+    margin-left: auto;
+  }
+}
+
+// ── Botones del modal ──
+.btn-cancel {
+  background: transparent;
+  border: 1px solid $border-color;
+  color: $text-muted;
+  padding: 0.6rem 1.3rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: $text-muted;
+    color: #ffffff;
+  }
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, $neon-purple-light, $neon-purple-dark);
+  border: none;
+  color: #ffffff;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba($neon-purple-light, 0.4);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid rgba($neon-pink, 0.4);
+  color: $neon-pink;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    background: rgba($neon-pink, 0.08);
+    box-shadow: 0 0 12px rgba($neon-pink, 0.2);
+  }
+}
+
+.btn-danger-solid {
+  background: linear-gradient(135deg, #c0392b, #96281b);
+  border: none;
+  color: #ffffff;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(#c0392b, 0.4);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+// ============================================
+// Animaciones
+// ============================================
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.content-fade {
+  animation: fadeIn 0.4s ease-in-out;
+}

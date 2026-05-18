@@ -1,0 +1,230 @@
+<div class="usuarios-wrapper">
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <header class="usuarios-header">
+    <div class="header-badge">⚽ Gestión de Cartelera Deportiva</div>
+    <h1 class="main-title">
+      Panel de<br>
+      <span class="title-accent">Eventos</span>
+    </h1>
+    <p class="subtitle">Administración de partidos, ligas y estados en tiempo real</p>
+
+    <div class="stats-row" *ngIf="!cargando">
+      <div class="stat-item">
+        <span class="stat-number">{{ eventos.length }}</span>
+        <span class="stat-label">Eventos Totales</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner-ring"></div>
+    <p class="loading-text">Sincronizando eventos<span class="dots">...</span></p>
+  </div>
+
+  <main class="main-content" *ngIf="!cargando">
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Buscar por equipo, deporte o liga..."
+          [(ngModel)]="busqueda"
+          (input)="filtrar()" />
+      </div>
+      <button class="btn-crear" (click)="abrirModalCrear()">
+        <span>+</span> Nuevo Evento
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table class="usuarios-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Evento / Deporte</th>
+            <th>Liga</th>
+            <th>Enfrentamiento (L vs V)</th>
+            <th>Fecha de Inicio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let evento of eventosFiltrados; let i = index"
+            class="table-row"
+            [style.animation-delay]="i * 0.05 + 's'">
+
+            <td class="td-id">#{{ evento.idEvento }}</td>
+
+            <td class="td-usuario">
+              <div class="avatar">{{ evento.deporte.substring(0,1).toUpperCase() }}</div>
+              <div>
+                <span class="username-text">{{ evento.nombre }}</span>
+                <small class="display-block">{{ evento.deporte }}</small>
+              </div>
+            </td>
+
+            <td class="td-email">{{ evento.liga }}</td>
+
+            <td>
+              <div class="matchup">
+                <span class="team">{{ evento.equipoLocal }}</span>
+                <span class="vs">VS</span>
+                <span class="team">{{ evento.equipoVisitante }}</span>
+              </div>
+            </td>
+
+            <td class="td-id">{{ evento.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</td>
+
+            <td>
+              <span class="role-badge"
+                [class.admin]="evento.estado === 'EN VIVO'"
+                [class.jugador]="evento.estado === 'PROGRAMADO'"
+                [class.bloqueado]="evento.estado === 'FINALIZADO'">
+                {{ evento.estado }}
+              </span>
+            </td>
+
+            <td class="td-actions">
+              <button class="btn-detalle" (click)="abrirDetalle(evento)">Gestionar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty-state" *ngIf="eventosFiltrados.length === 0">
+        <span class="empty-icon">🏟️</span>
+        <p>No hay eventos deportivos que coincidan</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== MODAL EDITAR ===== -->
+  <div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()" *ngIf="eventoSeleccionado">
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+
+      <div class="modal-header">
+        <div class="avatar lg">{{ eventoSeleccionado.deporte.substring(0,1) }}</div>
+        <div>
+          <h2 class="modal-title">Editar Evento <span class="modal-id">#{{ eventoSeleccionado.idEvento }}</span></h2>
+          <p class="modal-subtitle">{{ eventoSeleccionado.nombre }}</p>
+        </div>
+      </div>
+
+      <div class="modal-form">
+
+        <div class="form-group">
+          <label class="form-label">Nombre del Evento</label>
+          <input class="form-input" [(ngModel)]="eventoSeleccionado.nombre" placeholder="Ej: Real Madrid vs Chelsea" />
+        </div>
+
+        <div class="row-inputs">
+          <div class="form-group">
+            <label class="form-label">Deporte</label>
+            <input class="form-input" [(ngModel)]="eventoSeleccionado.deporte" placeholder="Ej: Fútbol" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Liga / Torneo</label>
+            <input class="form-input" [(ngModel)]="eventoSeleccionado.liga" placeholder="Ej: Champions League" />
+          </div>
+        </div>
+
+        <div class="row-inputs">
+          <div class="form-group">
+            <label class="form-label">Equipo Local</label>
+            <input class="form-input" [(ngModel)]="eventoSeleccionado.equipoLocal" placeholder="Ej: Real Madrid" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Equipo Visitante</label>
+            <input class="form-input" [(ngModel)]="eventoSeleccionado.equipoVisitante" placeholder="Ej: Chelsea FC" />
+          </div>
+        </div>
+
+        <div class="row-inputs">
+          <div class="form-group">
+            <label class="form-label">Fecha y Hora de Inicio</label>
+            <input class="form-input" type="datetime-local" [(ngModel)]="eventoSeleccionado.fechaInicio" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estado</label>
+            <select class="form-input select-cyber" [(ngModel)]="eventoSeleccionado.estado">
+              <option value="PROGRAMADO">PROGRAMADO</option>
+              <option value="EN VIVO">EN VIVO</option>
+              <option value="FINALIZADO">FINALIZADO</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-guardar" (click)="editar()">💾 Guardar Cambios</button>
+        <button class="btn-eliminar" (click)="eliminar(eventoSeleccionado.idEvento)">🗑 Eliminar Evento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL CREAR ===== -->
+  <div class="modal-backdrop" *ngIf="mostrarModalCrear" (click)="cerrarModalCrear()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarModalCrear()">✕</button>
+
+      <div class="modal-header simple">
+        <div class="modal-icon-crear">⚽</div>
+        <div>
+          <h2 class="modal-title">Nuevo Partido</h2>
+          <p class="modal-subtitle">Añadir evento a la cartelera deportiva</p>
+        </div>
+      </div>
+
+      <div class="modal-form">
+
+        <div class="form-group">
+          <label class="form-label">Nombre del Evento</label>
+          <input class="form-input" [(ngModel)]="nuevoEvento.nombre" placeholder="Ej: Real Madrid vs Chelsea" />
+        </div>
+
+        <div class="row-inputs">
+          <div class="form-group">
+            <label class="form-label">Equipo Local</label>
+            <input class="form-input" [(ngModel)]="nuevoEvento.equipoLocal" placeholder="Ej: Real Madrid" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Equipo Visitante</label>
+            <input class="form-input" [(ngModel)]="nuevoEvento.equipoVisitante" placeholder="Ej: Chelsea FC" />
+          </div>
+        </div>
+
+        <div class="row-inputs">
+          <div class="form-group">
+            <label class="form-label">Deporte</label>
+            <input class="form-input" [(ngModel)]="nuevoEvento.deporte" placeholder="Ej: Fútbol" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Liga / Torneo</label>
+            <input class="form-input" [(ngModel)]="nuevoEvento.liga" placeholder="Ej: Champions League" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fecha y Hora de Inicio</label>
+          <input class="form-input" type="datetime-local" [(ngModel)]="nuevoEvento.fechaInicio" />
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-guardar full" (click)="crear()">✚ Publicar Evento</button>
+      </div>
+    </div>
+  </div>
+
+</div>

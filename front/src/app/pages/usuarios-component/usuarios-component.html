@@ -1,0 +1,235 @@
+<div class="usuarios-wrapper">
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <header class="usuarios-header">
+    <div class="header-badge">👤 Panel de Usuarios</div>
+    <h1 class="main-title">
+      Gestión de<br>
+      <span class="title-accent">Usuarios</span>
+    </h1>
+    <p class="subtitle">Control total del sistema</p>
+
+    <div class="stats-row" *ngIf="!cargando">
+      <div class="stat-item">
+        <span class="stat-number">{{ usuarios.length }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ totalActivos }}</span>
+        <span class="stat-label">Activos</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ totalAdmins }}</span>
+        <span class="stat-label">Admins</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner-ring"></div>
+    <p class="loading-text">Cargando usuarios<span class="dots">...</span></p>
+  </div>
+
+  <main class="main-content" *ngIf="!cargando">
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Buscar por nombre o email..."
+          [(ngModel)]="busqueda" />
+      </div>
+
+      <div class="filters-group">
+        <div class="select-wrapper">
+          <select class="filter-select" [(ngModel)]="filtroEstado">
+            <option value="todos">Todos los estados</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+            <option value="bloqueado">Bloqueado</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper">
+          <select class="filter-select" [(ngModel)]="filtroRol">
+            <option value="todos">Todos los roles</option>
+            <option *ngFor="let rol of rolesUnicos" [value]="rol">{{ rol }}</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-crear" (click)="abrirModalCrear()">
+        <span>+</span> Nuevo Usuario
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table class="usuarios-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>ID</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let usuario of usuariosFiltrados; let i = index"
+            class="table-row"
+            [style.animation-delay]="i * 0.05 + 's'">
+
+            <td class="td-usuario">
+              <div class="avatar">{{ usuario.username ? usuario.username.charAt(0).toUpperCase() : 'U' }}</div>
+              <span class="username-text">{{ usuario.username }}</span>
+            </td>
+
+            <td class="td-email">{{ usuario.email }}</td>
+
+            <td>
+              <span class="role-badge" 
+                    [class.admin]="usuario.rol?.toLowerCase() === 'admin'" 
+                    [class.jugador]="usuario.rol?.toLowerCase() === 'jugador'">
+                {{ usuario.rol }}
+              </span>
+            </td>
+
+            <td>
+              <span class="status-badge" 
+                    [class.activo]="usuario.estado?.toLowerCase() === 'activo'" 
+                    [class.inactivo]="usuario.estado?.toLowerCase() === 'inactivo'" 
+                    [class.bloqueado]="usuario.estado?.toLowerCase() === 'bloqueado'">
+                <span class="status-dot"></span>
+                {{ usuario.estado }}
+              </span>
+            </td>
+
+            <td class="td-id">#{{ usuario.id_usuario }}</td>
+
+            <td class="td-actions">
+              <button class="btn-detalle" (click)="abrirDetalle(usuario)">Ver</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty-state" *ngIf="usuariosFiltrados.length === 0">
+        <span class="empty-icon">👤</span>
+        <p>No se encontraron usuarios</p>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()" *ngIf="usuarioSeleccionado">
+
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+
+      <div class="modal-header">
+        <div class="avatar lg">{{ usuarioSeleccionado.username ? usuarioSeleccionado.username.charAt(0).toUpperCase() : 'U' }}</div>
+        <div>
+          <h2 class="modal-title">{{ usuarioSeleccionado.username }}</h2>
+          <p class="modal-subtitle">ID #{{ usuarioSeleccionado.id_usuario }}</p>
+        </div>
+      </div>
+
+      <div class="modal-form">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" type="text" [(ngModel)]="usuarioSeleccionado.username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" [(ngModel)]="usuarioSeleccionado.email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rol</label>
+          <div class="select-wrapper full">
+            <select class="form-input" [(ngModel)]="usuarioSeleccionado.rol">
+              <option value="JUGADOR">JUGADOR</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <div class="select-wrapper full">
+            <select class="form-input" [(ngModel)]="usuarioSeleccionado.estado">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO">INACTIVO</option>
+              <option value="BLOQUEADO">BLOQUEADO</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-guardar" (click)="editar()">💾 Guardar cambios</button>
+        <button class="btn-eliminar" (click)="eliminar(usuarioSeleccionado.id_usuario)">🗑 Eliminar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarModalCrear" (click)="cerrarModalCrear()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+      <button class="modal-close" (click)="cerrarModalCrear()">✕</button>
+
+      <div class="modal-header simple">
+        <h2 class="modal-title">Nuevo Usuario</h2>
+        <p class="modal-subtitle">Completa los campos para crear</p>
+      </div>
+
+      <div class="modal-form">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" type="text" placeholder="ej: johndoe" [(ngModel)]="nuevoUsuario.username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="ej: john@casino.com" [(ngModel)]="nuevoUsuario.email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" type="password" placeholder="••••••••" [(ngModel)]="nuevoUsuario.Password_hash" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rol</label>
+          <div class="select-wrapper full">
+            <select class="form-input" [(ngModel)]="nuevoUsuario.rol">
+              <option value="JUGADOR">JUGADOR</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <div class="select-wrapper full">
+            <select class="form-input" [(ngModel)]="nuevoUsuario.estado">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO">INACTIVO</option>
+              <option value="BLOQUEADO">BLOQUEADO</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-guardar" (click)="crear()">✚ Crear Usuario</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

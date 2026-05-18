@@ -1,0 +1,191 @@
+<div class="wallet-wrapper">
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <header class="wallet-header">
+    <div class="header-badge">💳 Sistema de Billeteras</div>
+    <h1 class="main-title">
+      Mis<br>
+      <span class="title-accent">Billeteras</span>
+    </h1>
+    <p class="subtitle">Gestiona tus fondos en tiempo real</p>
+
+    <div class="stats-row" *ngIf="!cargando">
+      <div class="stat-item">
+        <span class="stat-number">{{ billeteras.length }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ billeterasActivas }}</span>
+        <span class="stat-label">Activas</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ totalBloqueado | number:'1.0-0' }}</span>
+        <span class="stat-label">Bloqueado</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner-ring"></div>
+    <p class="loading-text">Cargando billeteras<span class="dots">...</span></p>
+  </div>
+
+  <main class="main-content" *ngIf="!cargando">
+
+    <div class="filters-bar">
+      <button class="filter-btn" [class.active]="filtroActivo === 'todas'" (click)="setFiltro('todas')">Todas</button>
+      <button class="filter-btn" [class.active]="filtroActivo === 'activo'" (click)="setFiltro('activo')">Activas</button>
+      <button class="filter-btn" [class.active]="filtroActivo === 'bloqueado'" (click)="setFiltro('bloqueado')">Bloqueadas</button>
+
+      <button class="filter-btn" style="background: var(--pink-hot); color: white; border: none; font-weight: bold;" (click)="abrirModalCrear()">
+        + Nueva Billetera
+      </button>
+    </div>
+
+    <div class="wallets-grid">
+      <div
+        class="wallet-card"
+        *ngFor="let billetera of billeterasFiltradas; let i = index"
+        [class.bloqueada]="billetera.estado === 'bloqueado'"
+        [style.animation-delay]="i * 0.1 + 's'"
+        (click)="abrirDetalle(billetera)">
+
+        <div class="card-top">
+          <div class="currency-badge">{{ billetera.moneda }}</div>
+          <div class="status-badge" [class.activo]="billetera.estado === 'activo'" [class.bloqueado]="billetera.estado === 'bloqueado'">
+            <span class="status-dot"></span>
+            {{ billetera.estado === 'activo' ? 'Activa' : 'Bloqueada' }}
+          </div>
+        </div>
+
+        <div class="saldo-section">
+          <p class="saldo-label">Saldo disponible</p>
+          <h2 class="saldo-amount">
+            <span class="currency-symbol">{{ billetera.moneda }}</span>
+            {{ billetera.saldo | number:'1.0-2' }}
+          </h2>
+          <div class="saldo-bloqueado" *ngIf="billetera.saldo_bloqueado > 0">
+            <span class="lock-icon">🔒</span>
+            Bloqueado: {{ billetera.moneda }} {{ billetera.saldo_bloqueado | number:'1.0-2' }}
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-meta">
+            <span class="meta-label">ID Billetera</span>
+            <span class="meta-value">#{{ billetera.id_billetera }}</span>
+          </div>
+          <div class="card-meta">
+            <span class="meta-label">Usuario</span>
+            <span class="meta-value">#{{ billetera.id_usuario }}</span>
+          </div>
+          <div class="card-meta">
+            <span class="meta-label">Creada</span>
+            <span class="meta-value">{{ formatearFecha(billetera.fecha_creacion) }}</span>
+          </div>
+        </div>
+
+        <div class="card-hover-cta">
+          <span>Ajustar Fondos / Ver detalle →</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="billeterasFiltradas.length === 0">
+      <span class="empty-icon">💳</span>
+      <p>No hay billeteras en este estado</p>
+    </div>
+
+  </main>
+
+  <div class="modal-backdrop" *ngIf="mostrarModalCrear" (click)="cerrarModalCrear()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarModalCrear()">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-currency">NEW WALLET</div>
+        <h2 class="modal-title">Abrir Cuenta Financiera</h2>
+      </div>
+
+      <div class="modal-details" style="margin-top: 15px;">
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">ID del Propietario (Usuario)</span>
+          <input type="number" [(ngModel)]="nuevaBilletera.id_usuario" class="modal-input" placeholder="Ej: 1001">
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Divisa de Operación (Moneda)</span>
+          <select [(ngModel)]="nuevaBilletera.moneda" class="modal-input">
+            <option value="USD">USD - Dólares</option>
+            <option value="CLP">CLP - Pesos Chilenos</option>
+            <option value="EUR">EUR - Euros</option>
+          </select>
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Carga de Saldo Inicial</span>
+          <input type="number" [(ngModel)]="nuevaBilletera.saldo" class="modal-input" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-eliminar" style="background: rgba(74, 222, 128, 0.1); border-color: var(--green); color: var(--green);" (click)="crear()">
+          🚀 Habilitar Billetera
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()" *ngIf="billeteraSeleccionada">
+
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-currency">{{ billeteraSeleccionada.moneda }}</div>
+        <h2 class="modal-title">Billetera #{{ billeteraSeleccionada.id_billetera }}</h2>
+      </div>
+
+      <div class="modal-details">
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Estado Operacional</span>
+          <select [(ngModel)]="billeteraSeleccionada.estado" class="modal-input">
+            <option value="activo">Activa (Fondos Disponibles)</option>
+            <option value="bloqueado">Bloqueada (Congelar Operaciones)</option>
+          </select>
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Modificar Saldo Disponible</span>
+          <input type="number" [(ngModel)]="billeteraSeleccionada.saldo" class="modal-input">
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+          <span class="detail-key">Modificar Saldo Bloqueado</span>
+          <input type="number" [(ngModel)]="billeteraSeleccionada.saldo_bloqueado" class="modal-input">
+        </div>
+        <div class="detail-row" style="padding: 10px 0;">
+          <span class="detail-key">Propietario:</span>
+          <span class="detail-val">#{{ billeteraSeleccionada.id_usuario }}</span>
+        </div>
+        <div class="detail-row" style="padding: 10px 0;">
+          <span class="detail-key">Creada el:</span>
+          <span class="detail-val">{{ formatearFecha(billeteraSeleccionada.fecha_creacion) }}</span>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn-eliminar" style="background: rgba(168, 85, 247, 0.15); border-color: var(--purple-glow); color: var(--purple-glow);" (click)="editar()">
+          💾 Guardar Ajustes Financieros
+        </button>
+        <button class="btn-eliminar" (click)="eliminar(billeteraSeleccionada.id_billetera)">
+          🗑 Eliminar billetera
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
