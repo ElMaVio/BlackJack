@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import usuarios_microservicios.usuarios_microservicios.Models.Entities.Usuario;
+import usuarios_microservicios.usuarios_microservicios.Models.dto.UsuarioDTO;
 import usuarios_microservicios.usuarios_microservicios.Repository.UsuarioRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +41,7 @@ public class UsuarioServiceTest {
     void testListarUsuarios() {
         when(usuarioRepository.findAll()).thenReturn(Arrays.asList(mockUsuario));
 
-        List<Usuario> resultados = usuarioService.listarUsuarios();
+        List<UsuarioDTO> resultados = usuarioService.listarUsuarios();
 
         assertNotNull(resultados);
         assertEquals(1, resultados.size());
@@ -52,7 +53,7 @@ public class UsuarioServiceTest {
     void testObtenerUsuarioPorId() {
         when(usuarioRepository.findById(1)).thenReturn(Optional.of(mockUsuario));
 
-        Usuario resultado = usuarioService.obtenerUsuarioPorId(1);
+        UsuarioDTO resultado = usuarioService.obtenerUsuarioPorId(1);
 
         assertNotNull(resultado);
         assertEquals("test@test.com", resultado.getEmail());

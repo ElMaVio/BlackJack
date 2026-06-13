@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.wallet_service.wallet_service.models.entities.Wallet;
+import com.wallet_service.wallet_service.models.dto.WalletDto;
 import com.wallet_service.wallet_service.repositories.WalletRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +40,7 @@ public class WalletServiceTest {
     void testObtenerPorId_Existe() {
         when(walletRepository.findById(1)).thenReturn(Optional.of(mockWallet));
 
-        Wallet resultado = walletService.obtenerPorId(1);
+        WalletDto resultado = walletService.obtenerPorId(1);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.getId_billetera());
@@ -51,7 +52,7 @@ public class WalletServiceTest {
     void testObtenerPorId_NoExiste() {
         when(walletRepository.findById(99)).thenReturn(Optional.empty());
 
-        Wallet resultado = walletService.obtenerPorId(99);
+        WalletDto resultado = walletService.obtenerPorId(99);
 
         assertNull(resultado);
         verify(walletRepository, times(1)).findById(99);
