@@ -1,6 +1,6 @@
 package usuarios_microservicios.usuarios_microservicios.Controller;
 
-import usuarios_microservicios.usuarios_microservicios.Models.Entities.Usuario;
+import usuarios_microservicios.usuarios_microservicios.Models.dto.UsuarioDTO;
 import usuarios_microservicios.usuarios_microservicios.Models.requests.UsuarioRequest;
 import usuarios_microservicios.usuarios_microservicios.Models.requests.UsuarioActualizarRequest;
 import usuarios_microservicios.usuarios_microservicios.Services.UsuarioService;
@@ -27,17 +27,17 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping("")
-    public List<Usuario> obtenerTodosUsuarios() {
+    public List<UsuarioDTO> obtenerTodosUsuarios() {
         return usuarioService.listarUsuarios();
     }
 
     @PostMapping("/crear")
-    public Usuario agregarUsuario(@RequestBody UsuarioRequest usuarioNuevo) {
+    public UsuarioDTO agregarUsuario(@RequestBody UsuarioRequest usuarioNuevo) {
         return usuarioService.agregarUsuario(usuarioNuevo);
     }
 
     @PutMapping("/actualizar")
-    public Usuario actualizarUsuario(@RequestBody UsuarioActualizarRequest usuarioEditado) {
+    public UsuarioDTO actualizarUsuario(@RequestBody UsuarioActualizarRequest usuarioEditado) {
         return usuarioService.actualizarUsuario(usuarioEditado);
     }
 
@@ -47,7 +47,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{idUsuario}")
-    public Usuario obtenerUsuarioPorId(@PathVariable int idUsuario) {
+    public UsuarioDTO obtenerUsuarioPorId(@PathVariable int idUsuario) {
         return usuarioService.obtenerUsuarioPorId(idUsuario);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.wallet_service.wallet_service.models.entities.Wallet;
+import com.wallet_service.wallet_service.models.dto.WalletDto;
 import com.wallet_service.wallet_service.models.requests.WalletActualizarRequest;
 import com.wallet_service.wallet_service.models.requests.WalletRequest;
 import com.wallet_service.wallet_service.services.WalletService;
@@ -20,23 +21,23 @@ public class WalletController {
     private WalletService walletService;
 
     @GetMapping
-    public List<Wallet> getAll() {
+    public List<WalletDto> getAll() {
         return walletService.listarBilleteras();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Wallet> getById(@PathVariable int id) {
-        Wallet w = walletService.obtenerPorId(id);
+    public ResponseEntity<WalletDto> getById(@PathVariable int id) {
+        WalletDto w = walletService.obtenerPorId(id);
         return w != null ? ResponseEntity.ok(w) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public Wallet create(@RequestBody WalletRequest request) {
+    public WalletDto create(@RequestBody WalletRequest request) {
         return walletService.crearBilletera(request);
     }
 
     @PutMapping
-    public Wallet update(@RequestBody WalletActualizarRequest request) {
+    public WalletDto update(@RequestBody WalletActualizarRequest request) {
         return walletService.actualizarBilletera(request);
     }
 

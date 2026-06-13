@@ -11,7 +11,12 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ResponseStatusException;
 
 import com.apuestas_services.apuestas_services.models.entities.Bet;
+import com.apuestas_services.apuestas_services.models.dto.BetDto;
 import com.apuestas_services.apuestas_services.models.dto.WalletDto;
+import com.apuestas_services.apuestas_services.models.request.BetActualizarRequest;
+import com.apuestas_services.apuestas_services.models.request.BetRequest;
+import com.apuestas_services.apuestas_services.repositories.BetRepository;
+import java.util.stream.Collectors;
 import com.apuestas_services.apuestas_services.models.request.BetActualizarRequest;
 import com.apuestas_services.apuestas_services.models.request.BetRequest;
 import com.apuestas_services.apuestas_services.repositories.BetRepository;
@@ -26,17 +31,18 @@ public class BetService {
     private WebClient webClient;
 
     // 1. Obtener una apuesta específica por su ID
-    public Bet obtenerBetPorId(int idBet) {
-        return betRepository.findById(idBet).orElse(null);
+    public BetDto obtenerBetPorId(int idBet) {
+        Bet b = betRepository.findById(idBet).orElse(null);
+        return b != null ? mapToDTO(b) : null;
     }
 
     // 2. Listar todas las apuestas registradas en el sistema
-    public List<Bet> listarApuestas() {
-        return betRepository.findAll();
+    public List<BetDto> listarApuestas() {
+        return betRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
     // 3. Agregar una nueva apuesta validando fondos mediante WebClient
-    public Bet agregarBet(BetRequest betNuevo) {
+    public BetDto agregarBet(BetRequest betNuevo) {
         WalletDto wallet = null;
 
         try {
@@ -71,11 +77,12 @@ public class BetService {
         bet.setEstado(betNuevo.getEstado());
         bet.setFecha_creacion(new Date());
 
-        return betRepository.save(bet);
+        Bet guardado = betRepository.save(bet);
+        return mapToDTO(guardado);
     }
 
     // 4. Actualizar una apuesta existente (Resolver estado)
-    public Bet actualizarBet(BetActualizarRequest betEditado) {
+    public BetDto actualizarBet(BetActualizarRequest betEditado) {
         Bet betExiste = betRepository.findById(betEditado.getId_apuesta()).orElse(null);
         if (betExiste == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Apuesta no encontrada.");
@@ -92,7 +99,8 @@ public class BetService {
             betExiste.setFecha_resolucion(new Date());
         }
 
-        return betRepository.save(betExiste);
+        Bet guardado = betRepository.save(betExiste);
+        return mapToDTO(guardado);
     }
 
     // 5. Eliminar registro
@@ -104,5 +112,19 @@ public class BetService {
 
         betRepository.deleteById(idBet);
         return "Apuesta eliminada con éxito!";
+    }
+
+    private BetDto mapToDTO(Bet b) {
+        BetDto dto = new BetDto();
+        dto.setId_apuesta(b.getId_apuesta());
+        dto.setId_usuario(b.getId_usuario());
+        dto.setId_billetera(b.getId_billetera());
+        dto.setMonto_total(b.getMonto_total());
+        dto.setGanancia_potencial(b.getGanancia_potencial());
+        dto.setTipo_apuesta(b.getTipo_apuesta());
+        dto.setEstado(b.getEstado());
+        dto.setFecha_creacion(b.getFecha_creacion());
+        dto.setFecha_resolucion(b.getFecha_resolucion());
+        return dto;
     }
 }

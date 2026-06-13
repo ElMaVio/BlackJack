@@ -1,6 +1,6 @@
 package com.apuestas_services.apuestas_services.controller;
 
-import com.apuestas_services.apuestas_services.models.entities.Bet;
+import com.apuestas_services.apuestas_services.models.dto.BetDto;
 import com.apuestas_services.apuestas_services.models.request.BetRequest;
 import com.apuestas_services.apuestas_services.models.request.BetActualizarRequest;
 import com.apuestas_services.apuestas_services.services.BetService;
@@ -27,19 +27,19 @@ public class BetController {
 
     // GET
     @GetMapping("")
-    public List<Bet> obtenerTodasApuestas() {
+    public List<BetDto> obtenerTodasApuestas() {
         return betService.listarApuestas();
     }
 
     // POST
     @PostMapping("")
-    public Bet agregarApuesta(@RequestBody BetRequest apuestaNueva) {
+    public BetDto agregarApuesta(@RequestBody BetRequest apuestaNueva) {
         return betService.agregarBet(apuestaNueva);
     }
 
     // PUT
     @PutMapping("")
-    public Bet actualizarApuesta(@RequestBody BetActualizarRequest apuestaEditada) {
+    public BetDto actualizarApuesta(@RequestBody BetActualizarRequest apuestaEditada) {
         return betService.actualizarBet(apuestaEditada);
     }
 
@@ -51,7 +51,7 @@ public class BetController {
 
     // GET
     @GetMapping("/{idBet}")
-    public Bet obtenerApuestaPorId(@PathVariable int idBet) {
+    public BetDto obtenerApuestaPorId(@PathVariable int idBet) {
         return betService.obtenerBetPorId(idBet);
     }
 }

@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.wallet_service.wallet_service.models.entities.Wallet;
+import com.wallet_service.wallet_service.models.dto.WalletDto;
 import com.wallet_service.wallet_service.models.requests.WalletActualizarRequest;
 import com.wallet_service.wallet_service.models.requests.WalletRequest;
 import com.wallet_service.wallet_service.repositories.WalletRepository;
+import java.util.stream.Collectors;
 
 @Service
 public class WalletService {
@@ -19,17 +21,18 @@ public class WalletService {
     private WalletRepository walletRepository;
 
     // 1. READ ALL
-    public List<Wallet> listarBilleteras() {
-        return walletRepository.findAll();
+    public List<WalletDto> listarBilleteras() {
+        return walletRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
     // 2. READ BY ID
-    public Wallet obtenerPorId(int idBilletera) {
-        return walletRepository.findById(idBilletera).orElse(null);
+    public WalletDto obtenerPorId(int idBilletera) {
+        Wallet w = walletRepository.findById(idBilletera).orElse(null);
+        return w != null ? mapToDTO(w) : null;
     }
 
     // 3. CREATE
-    public Wallet crearBilletera(WalletRequest request) {
+    public WalletDto crearBilletera(WalletRequest request) {
         Wallet wallet = new Wallet();
         wallet.setId_usuario(request.getId_usuario());
         wallet.setSaldo(request.getSaldo());
@@ -38,11 +41,12 @@ public class WalletService {
         wallet.setEstado(request.getEstado() != null ? request.getEstado() : "activo");
         wallet.setFecha_creacion(new Date()); // Se asigna la fecha actual automáticamente
 
-        return walletRepository.save(wallet);
+        Wallet guardado = walletRepository.save(wallet);
+        return mapToDTO(guardado);
     }
 
     // 4. UPDATE
-    public Wallet actualizarBilletera(WalletActualizarRequest request) {
+    public WalletDto actualizarBilletera(WalletActualizarRequest request) {
         Wallet existe = walletRepository.findById(request.getId_billetera()).orElse(null);
         if (existe == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Billetera no encontrada.");
@@ -54,7 +58,8 @@ public class WalletService {
         existe.setMoneda(request.getMoneda());
         existe.setEstado(request.getEstado());
 
-        return walletRepository.save(existe);
+        Wallet guardado = walletRepository.save(existe);
+        return mapToDTO(guardado);
     }
 
     // 5. DELETE
@@ -64,5 +69,17 @@ public class WalletService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Billetera no encontrada.");
         }
         walletRepository.deleteById(idBilletera);
+    }
+
+    private WalletDto mapToDTO(Wallet w) {
+        WalletDto dto = new WalletDto();
+        dto.setId_billetera(w.getId_billetera());
+        dto.setId_usuario(w.getId_usuario());
+        dto.setSaldo(w.getSaldo());
+        dto.setSaldo_bloqueado(w.getSaldo_bloqueado());
+        dto.setMoneda(w.getMoneda());
+        dto.setEstado(w.getEstado());
+        dto.setFecha_creacion(w.getFecha_creacion());
+        return dto;
     }
 }
