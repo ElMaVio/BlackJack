@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/juegos")
-@CrossOrigin(origins = "http://localhost:4200") // 👈 Permite la comunicación directa con tu frontend en Angular
+@CrossOrigin(origins = "*") // 👈 Permite la comunicación directa con tu frontend en Angular
 public class JuegosController {
 
     @Autowired

@@ -1,0 +1,12 @@
+com\wallet_service\wallet_service\models\requests\WalletActualizarRequest.class
+com\wallet_service\wallet_service\models\requests\WalletRequest.class
+com\wallet_service\wallet_service\controller\BaseController.class
+com\wallet_service\wallet_service\controller\WalletController.class
+com\wallet_service\wallet_service\models\requests\BaseRequest.class
+com\wallet_service\wallet_service\WalletServiceApplication.class
+com\wallet_service\wallet_service\models\entities\Wallet.class
+com\wallet_service\wallet_service\services\WalletService.class
+com\wallet_service\wallet_service\models\dto\UsuarioDto.class
+com\wallet_service\wallet_service\models\dto\WalletDto.class
+com\wallet_service\wallet_service\config\WebClientConfig.class
+com\wallet_service\wallet_service\repositories\WalletRepository.class

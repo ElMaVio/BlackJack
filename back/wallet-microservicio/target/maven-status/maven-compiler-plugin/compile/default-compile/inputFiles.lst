@@ -1,0 +1,12 @@
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\config\WebClientConfig.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\controller\BaseController.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\controller\WalletController.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\models\dto\UsuarioDto.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\models\dto\WalletDto.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\models\entities\Wallet.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\models\requests\BaseRequest.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\models\requests\WalletActualizarRequest.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\models\requests\WalletRequest.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\repositories\WalletRepository.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\services\WalletService.java
+C:\Users\javie\Desktop\blackjack\BlackJack\back\wallet-microservicio\src\main\java\com\wallet_service\wallet_service\WalletServiceApplication.java

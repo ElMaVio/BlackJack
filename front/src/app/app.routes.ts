@@ -8,6 +8,11 @@ import { ApuestasComponent } from './pages/apuestas-component/apuestas-component
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'juegos',
+    pathMatch: 'full'
+  },
+  {
     path: 'juegos',
     component: VerJuegosComponent
   },
@@ -19,8 +24,9 @@ export const routes: Routes = [
     path: 'billetera',
     component: BilleteraComponent
   },
-  { path: 'limites',
-     component: LimitesresponsablesComponent
+  {
+    path: 'limites',
+    component: LimitesresponsablesComponent
   },
   {
     path: 'eventos',
@@ -30,5 +36,8 @@ export const routes: Routes = [
     path: 'apuestas',
     component: ApuestasComponent
   },
-
+  {
+    path: '**',
+    redirectTo: 'juegos'
+  }
 ];

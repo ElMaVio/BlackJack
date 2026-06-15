@@ -11,7 +11,7 @@ import eventos_microserevicios.eventos_microserevicios.Services.EventosServices;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200") 
+@CrossOrigin(origins = "*") 
 @RestController
 @RequestMapping("/eventos")
 public class EventosController {
