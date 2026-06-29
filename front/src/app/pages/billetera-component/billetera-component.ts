@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BilleteraService } from '../../services/billetera-service';
+import { NotificationService } from '../../services/notification.service';
 
 export interface Billetera {
   estado: string;
@@ -23,6 +24,7 @@ export interface Billetera {
 export class BilleteraComponent implements OnInit {
   private billeteraService = inject(BilleteraService);
   private cdr = inject(ChangeDetectorRef);
+  private notificationService = inject(NotificationService);
 
   billeteras: Billetera[] = [];
   cargando: boolean = true;
@@ -103,11 +105,13 @@ export class BilleteraComponent implements OnInit {
     this.billeteraService.crearBilletera(this.nuevaBilletera).subscribe({
       next: (billeteraCreada) => {
         this.billeteras.push(billeteraCreada); // Agrega la billetera devuelta por Java a la grilla
+        this.notificationService.showSuccess('Billetera creada exitosamente');
         this.cerrarModalCrear();
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al crear billetera:', error);
+        this.notificationService.showError('Error al crear billetera');
       }
     });
   }
@@ -122,11 +126,13 @@ export class BilleteraComponent implements OnInit {
         if (index !== -1) {
           this.billeteras[index] = billeteraActualizada;
         }
+        this.notificationService.showSuccess('Billetera actualizada exitosamente');
         this.cerrarModal();
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al actualizar billetera:', error);
+        this.notificationService.showError('Error al actualizar billetera');
       }
     });
   }
@@ -136,11 +142,13 @@ export class BilleteraComponent implements OnInit {
     this.billeteraService.eliminarBilletera(id).subscribe({
       next: () => {
         this.billeteras = this.billeteras.filter(b => b.id_billetera !== id);
+        this.notificationService.showSuccess('Billetera eliminada');
         this.cerrarModal();
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al eliminar billetera:', error);
+        this.notificationService.showError('Error al eliminar billetera');
       }
     });
   }

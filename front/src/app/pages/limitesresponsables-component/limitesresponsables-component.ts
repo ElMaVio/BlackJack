@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LimitesService } from '../../services/limitesresponsables-service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-limitesresponsables',
@@ -31,7 +32,8 @@ export class LimitesresponsablesComponent implements OnInit {
 
   constructor(
     private limitesService: LimitesService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private notificationService: NotificationService
   ) {}
 
   async ngOnInit() {
@@ -77,13 +79,13 @@ export class LimitesresponsablesComponent implements OnInit {
 
   async crear() {
     if (!this.nuevoLimite.usuariosIdUsuario || !this.nuevoLimite.limiteDiario || !this.nuevoLimite.limiteMensual) {
-      alert('Por favor complete todos los campos.');
+      this.notificationService.showError('Por favor complete todos los campos.');
       return;
     }
     this.mostrarModalCrear = false;
     this.cargando = true;
     const respuesta = await this.limitesService.crearLimite(this.nuevoLimite);
-    alert(respuesta ?? 'Límite creado con éxito');
+    this.notificationService.showSuccess(respuesta ?? 'Límite creado con éxito');
     await this.cargarLimites();
   }
 
@@ -103,13 +105,13 @@ export class LimitesresponsablesComponent implements OnInit {
       this.limiteSeleccionado.limiteDiario == null ||
       this.limiteSeleccionado.limiteMensual == null
     ) {
-      alert('Por favor complete todos los campos.');
+      this.notificationService.showError('Por favor complete todos los campos.');
       return;
     }
     this.mostrarModal = false;
     this.cargando = true;
     const respuesta = await this.limitesService.actualizarLimite(this.limiteSeleccionado);
-    alert(respuesta ?? 'Límite actualizado con éxito');
+    this.notificationService.showSuccess(respuesta ?? 'Límite actualizado con éxito');
     await this.cargarLimites();
   }
 
@@ -126,14 +128,14 @@ export class LimitesresponsablesComponent implements OnInit {
 
   async eliminar(id: number) {
     if (!id) {
-      alert('No se pudo identificar el ID del límite.');
+      this.notificationService.showError('No se pudo identificar el ID del límite.');
       return;
     }
     this.mostrarModalEliminar = false;
     this.cargando = true;
     const respuesta = await this.limitesService.eliminarLimite(id);
     this.limiteSeleccionado = null;
-    alert(respuesta ?? 'Límite eliminado');
+    this.notificationService.showSuccess(respuesta ?? 'Límite eliminado');
     await this.cargarLimites();
   }
 }

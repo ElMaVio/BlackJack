@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventosService } from '../../services/eventos-services';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-eventos',
@@ -35,7 +36,8 @@ export class EventosComponent implements OnInit {
 
   constructor(
     private _eventosService: EventosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private notificationService: NotificationService
   ) {}
 
   async ngOnInit() {
@@ -97,11 +99,11 @@ export class EventosComponent implements OnInit {
 
   async crear() {
     if (!this.nuevoEvento.nombre || !this.nuevoEvento.deporte) {
-      alert('Por favor, ingresa el nombre y el deporte del evento.');
+      this.notificationService.showError('Por favor, ingresa el nombre y el deporte del evento.');
       return;
     }
     const res = await this._eventosService.crearEvento(this.nuevoEvento);
-    alert(res);
+    this.notificationService.showSuccess(res);
     this.cerrarModalCrear();
     await this.cargarEventos();
   }
@@ -121,7 +123,7 @@ export class EventosComponent implements OnInit {
 
   async editar() {
     const res = await this._eventosService.actualizarEvento(this.eventoSeleccionado);
-    alert(res);
+    this.notificationService.showSuccess(res);
     this.cerrarModal();
     await this.cargarEventos();
   }
@@ -129,7 +131,7 @@ export class EventosComponent implements OnInit {
   async eliminar(id: number) {
     if (confirm('¿Estás completamente seguro de cancelar y eliminar este evento deportivo?')) {
       const res = await this._eventosService.eliminarEvento(id);
-      alert(res);
+      this.notificationService.showSuccess(res);
       this.cerrarModal();
       await this.cargarEventos();
     }

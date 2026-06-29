@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuario-service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-ver-usuarios',
@@ -35,7 +36,8 @@ export class VerUsuariosComponent implements OnInit {
 
   constructor(
     private usuariosService: UsuariosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private notificationService: NotificationService
   ) {}
 
   async ngOnInit() {
@@ -107,7 +109,7 @@ export class VerUsuariosComponent implements OnInit {
 
   async crear() {
     if (!this.nuevoUsuario.username || !this.nuevoUsuario.email) {
-      alert('Por favor complete los campos obligatorios.');
+      this.notificationService.showError('Por favor complete los campos obligatorios.');
       return;
     }
 
@@ -116,16 +118,16 @@ export class VerUsuariosComponent implements OnInit {
 
     const ok = await this.usuariosService.crearUsuario(this.nuevoUsuario);
     if (ok) {
-      alert('Usuario creado con éxito');
+      this.notificationService.showSuccess('Usuario creado con éxito');
     } else {
-      alert('Error al crear usuario');
+      this.notificationService.showError('Error al crear usuario');
     }
     await this.cargarUsuarios();
   }
 
   async editar() {
     if (!this.usuarioSeleccionado.username || !this.usuarioSeleccionado.email) {
-      alert('Por favor complete los campos obligatorios.');
+      this.notificationService.showError('Por favor complete los campos obligatorios.');
       return;
     }
 
@@ -134,16 +136,16 @@ export class VerUsuariosComponent implements OnInit {
 
     const ok = await this.usuariosService.actualizarUsuario(this.usuarioSeleccionado);
     if (ok) {
-      alert('Cambios guardados con éxito');
+      this.notificationService.showSuccess('Cambios guardados con éxito');
     } else {
-      alert('Error al actualizar usuario');
+      this.notificationService.showError('Error al actualizar usuario');
     }
     await this.cargarUsuarios();
   }
 
   async eliminar(id: number) {
     if (!id) {
-      alert('No se pudo identificar el ID del usuario.');
+      this.notificationService.showError('No se pudo identificar el ID del usuario.');
       return;
     }
 
@@ -153,9 +155,9 @@ export class VerUsuariosComponent implements OnInit {
 
       const ok = await this.usuariosService.eliminarUsuario(id);
       if (ok) {
-        alert('Usuario eliminado');
+        this.notificationService.showSuccess('Usuario eliminado');
       } else {
-        alert('Error al eliminar usuario');
+        this.notificationService.showError('Error al eliminar usuario');
       }
       await this.cargarUsuarios();
     }

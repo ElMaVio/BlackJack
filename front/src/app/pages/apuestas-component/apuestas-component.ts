@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApuestasService } from '../../services/apuestas-service';
+import { NotificationService } from '../../services/notification.service';
 
 export interface Apuesta {
   id_apuesta: number;
@@ -25,6 +26,7 @@ export interface Apuesta {
 export class ApuestasComponent implements OnInit {
   private apuestasService = inject(ApuestasService);
   private cdr = inject(ChangeDetectorRef);
+  private notificationService = inject(NotificationService);
 
   apuestas: Apuesta[] = [];
   cargando: boolean = true;
@@ -109,12 +111,13 @@ export class ApuestasComponent implements OnInit {
     this.apuestasService.crearApuesta(this.nuevaApuesta).subscribe({
       next: (creada) => {
         this.apuestas.push(creada);
+        this.notificationService.showSuccess('Apuesta creada con éxito');
         this.cerrarModalCrear();
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al crear la apuesta:', error);
-        alert('Error: ' + (error.error?.message || 'Verifica los fondos de la billetera.'));
+        this.notificationService.showError('Error: ' + (error.error?.message || 'Verifica los fondos de la billetera.'));
       }
     });
   }
@@ -129,11 +132,13 @@ export class ApuestasComponent implements OnInit {
         if (idx !== -1) {
           this.apuestas[idx] = actualizada; // Actualiza el ticket en pantalla con el nuevo estado y fecha_resolucion
         }
+        this.notificationService.showSuccess('Apuesta actualizada');
         this.cerrarModal();
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al actualizar la apuesta:', error);
+        this.notificationService.showError('Error al actualizar apuesta');
       }
     });
   }
@@ -143,11 +148,13 @@ export class ApuestasComponent implements OnInit {
     this.apuestasService.eliminarApuesta(id).subscribe({
       next: () => {
         this.apuestas = this.apuestas.filter(a => a.id_apuesta !== id);
+        this.notificationService.showSuccess('Apuesta eliminada');
         this.cerrarModal();
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al eliminar la apuesta:', error);
+        this.notificationService.showError('Error al eliminar apuesta');
       }
     });
   }

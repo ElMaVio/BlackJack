@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { JuegosService } from '../../services/juegos-service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-ver-juegos',
@@ -35,7 +36,8 @@ export class VerJuegosComponent implements OnInit {
 
   constructor(
     private juegosService: JuegosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private notificationService: NotificationService
   ) {}
 
   async ngOnInit() {
@@ -99,13 +101,17 @@ export class VerJuegosComponent implements OnInit {
 
   async crear() {
     if (!this.nuevoJuego.nombre || !this.nuevoJuego.tipo || !this.nuevoJuego.proveedor) {
-      alert('Por favor complete todos los campos.');
+      this.notificationService.showError('Por favor complete todos los campos.');
       return;
     }
     this.mostrarModalCrear = false;
     this.cargando = true;
     const ok = await this.juegosService.crearJuego(this.nuevoJuego);
-    alert(ok ? 'Juego creado con éxito' : 'Error al crear juego');
+    if (ok) {
+      this.notificationService.showSuccess('Juego creado con éxito');
+    } else {
+      this.notificationService.showError('Error al crear juego');
+    }
     await this.cargarJuegos();
   }
 
@@ -122,13 +128,17 @@ export class VerJuegosComponent implements OnInit {
 
   async editar() {
     if (!this.juegoSeleccionado.nombre || !this.juegoSeleccionado.tipo || !this.juegoSeleccionado.proveedor) {
-      alert('Por favor complete todos los campos.');
+      this.notificationService.showError('Por favor complete todos los campos.');
       return;
     }
     this.mostrarModal = false;
     this.cargando = true;
     const ok = await this.juegosService.actualizarJuego(this.juegoSeleccionado);
-    alert(ok ? 'Cambios guardados con éxito' : 'Error al actualizar juego');
+    if (ok) {
+      this.notificationService.showSuccess('Cambios guardados con éxito');
+    } else {
+      this.notificationService.showError('Error al actualizar juego');
+    }
     await this.cargarJuegos();
   }
 
@@ -147,7 +157,7 @@ export class VerJuegosComponent implements OnInit {
 
   async eliminar(id: number) {
     if (!id) {
-      alert('No se pudo identificar el ID del juego.');
+      this.notificationService.showError('No se pudo identificar el ID del juego.');
       return;
     }
     this.mostrarModalEliminar = false;
@@ -155,9 +165,9 @@ export class VerJuegosComponent implements OnInit {
     const ok = await this.juegosService.eliminarJuego(id);
     if (ok) {
       this.juegoSeleccionado = null;
-      alert('Juego eliminado');
+      this.notificationService.showSuccess('Juego eliminado');
     } else {
-      alert('Error al eliminar juego');
+      this.notificationService.showError('Error al eliminar juego');
     }
     await this.cargarJuegos();
   }
