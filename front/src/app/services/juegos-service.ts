@@ -37,10 +37,12 @@ export class JuegosService {
 
   async actualizarJuego(juego: any): Promise<boolean> {
     try {
+      // El backend espera 'idJuego', pero del get viene como 'idjuego'
+      const payload = { ...juego, idJuego: juego.idjuego || juego.idJuego };
       const response = await fetch(`${this.apiUrl}/actualizar`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(juego)
+        body: JSON.stringify(payload)
       });
       return response.ok;
     } catch (error) {
@@ -51,7 +53,7 @@ export class JuegosService {
 
   async eliminarJuego(id: number): Promise<boolean> {
     try {
-      const response = await fetch(`${this.apiUrl}/${id}`, {
+      const response = await fetch(`${this.apiUrl}/eliminar/${id}`, {
         method: 'DELETE'
       });
       return response.ok;

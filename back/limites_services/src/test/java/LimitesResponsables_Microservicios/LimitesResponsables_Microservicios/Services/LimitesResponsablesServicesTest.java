@@ -21,21 +21,27 @@ import LimitesResponsables_Microservicios.LimitesResponsables_Microservicios.Rep
 @ExtendWith(MockitoExtension.class)
 public class LimitesResponsablesServicesTest {
 
+    // Mockito: Al usar @Mock, le decimos al sistema que NO levante la base de datos completa.
+    // En su lugar, Mockito crea una "clase de mentira" que intercepta las llamadas (como save, findAll) y responde al instante.
     @Mock
     private LimitesResponsablesRepository limitesRepository;
 
+    // @InjectMocks agarra nuestra "clase de mentira" de arriba y la mete a la fuerza dentro del LimitesResponsablesServices.
     @InjectMocks
     private LimitesResponsablesServices limitesServices;
 
     private LimitesResponsables mockLimite;
 
+    // ¿Qué hace @BeforeEach? Literalmente "Antes de cada uno". 
+    // Es una función preparatoria. En vez de instanciar un límite falso y llenarlo de datos al principio de cada test...
+    // Ponemos ese código repetitivo aquí y JUnit lo ejecuta automáticamente antes de iniciar cada @Test.
     @BeforeEach
     void setUp() {
         mockLimite = new LimitesResponsables();
-        mockLimite.setId_limite(1);
-        mockLimite.setId_usuario(10);
-        mockLimite.setLimite_diario(100.0);
-        mockLimite.setLimite_semanal(500.0);
+        mockLimite.setIdLimite(1);
+        mockLimite.setUsuariosIdUsuario(10);
+        mockLimite.setLimiteDiario(100);
+        mockLimite.setLimiteMensual(500);
     }
 
     @Test
@@ -44,12 +50,12 @@ public class LimitesResponsablesServicesTest {
         when(limitesRepository.findAll()).thenReturn(Arrays.asList(mockLimite));
 
         // Act: Ejecutamos el servicio
-        List<LimitesResponsablesDTO> resultados = limitesServices.obtenerTodos();
+        List<LimitesResponsablesDTO> resultados = limitesServices.listarTodos();
 
         // Assert: Validamos los datos devueltos
         assertNotNull(resultados);
         assertEquals(1, resultados.size());
-        assertEquals(10, resultados.get(0).getId_usuario());
+        assertEquals(10, resultados.get(0).getUsuariosIdUsuario());
         verify(limitesRepository, times(1)).findAll();
     }
 
@@ -62,7 +68,7 @@ public class LimitesResponsablesServicesTest {
         String resultado = limitesServices.eliminarLimite(99);
 
         // Assert: Validamos el mensaje
-        assertEquals("El límite responsable no existe.", resultado);
+        assertEquals("Error: Límite no encontrado", resultado);
         verify(limitesRepository, never()).deleteById(99);
     }
 }
