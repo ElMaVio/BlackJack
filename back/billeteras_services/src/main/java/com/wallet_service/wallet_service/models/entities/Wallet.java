@@ -17,7 +17,7 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_billetera;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private int id_usuario;
 
     @Column(nullable = false)

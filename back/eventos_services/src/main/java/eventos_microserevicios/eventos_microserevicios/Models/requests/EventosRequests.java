@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class EventosRequests {
+    private String tipo;
     private String nombre;
     private String deporte;
     private String liga;

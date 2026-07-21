@@ -37,14 +37,24 @@
 
   <main class="main-content" *ngIf="!cargando">
 
-    <div class="filters-bar">
-      <button class="filter-btn" [class.active]="filtroActivo === 'todas'" (click)="setFiltro('todas')">Todas</button>
-      <button class="filter-btn" [class.active]="filtroActivo === 'activo'" (click)="setFiltro('activo')">Activas</button>
-      <button class="filter-btn" [class.active]="filtroActivo === 'bloqueado'" (click)="setFiltro('bloqueado')">Bloqueadas</button>
-
-      <button class="filter-btn" style="background: var(--pink-hot); color: white; border: none; font-weight: bold;" (click)="abrirModalCrear()">
-        + Nueva Billetera
-      </button>
+    <div class="filters-bar" style="justify-content: space-between;">
+      <div style="display: flex; gap: 10px;">
+        <button class="filter-btn" [class.active]="filtroActivo === 'todas'" (click)="setFiltro('todas')">Todas</button>
+        <button class="filter-btn" [class.active]="filtroActivo === 'activo'" (click)="setFiltro('activo')">Activas</button>
+        <button class="filter-btn" [class.active]="filtroActivo === 'bloqueado'" (click)="setFiltro('bloqueado')">Bloqueadas</button>
+      </div>
+      
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input 
+          type="text" 
+          placeholder="Buscar por ID o Usuario..." 
+          [(ngModel)]="busqueda"
+          style="background: var(--white-faint); border: 1px solid rgba(139, 47, 201, 0.25); color: var(--white); font-family: monospace; padding: 10px 16px; border-radius: 100px; outline: none; font-size: 11px;">
+        
+        <button class="filter-btn" style="background: var(--pink-hot); color: white; border: none; font-weight: bold;" (click)="abrirModalCrear()">
+          + Nueva Billetera
+        </button>
+      </div>
     </div>
 
     <div class="wallets-grid">
@@ -116,14 +126,15 @@
       <div class="modal-details" style="margin-top: 15px;">
         <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
           <span class="detail-key">ID del Propietario (Usuario)</span>
-          <input type="number" [(ngModel)]="nuevaBilletera.id_usuario" class="modal-input" placeholder="Ej: 1001">
+          <input type="number" [(ngModel)]="nuevaBilletera.id_usuario" list="usuariosBilleteraList" class="modal-input" placeholder="Ej: 1001">
+          <datalist id="usuariosBilleteraList">
+            <option *ngFor="let u of usuariosList" [value]="u.id_usuario">{{ u.username }}</option>
+          </datalist>
         </div>
         <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
           <span class="detail-key">Divisa de Operación (Moneda)</span>
           <select [(ngModel)]="nuevaBilletera.moneda" class="modal-input">
-            <option value="USD">USD - Dólares</option>
             <option value="CLP">CLP - Pesos Chilenos</option>
-            <option value="EUR">EUR - Euros</option>
           </select>
         </div>
         <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">

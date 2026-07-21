@@ -44,12 +44,13 @@
           class="search-input"
           type="text"
           placeholder="Buscar por nombre o email..."
-          [(ngModel)]="busqueda" />
+          [(ngModel)]="busqueda"
+          (ngModelChange)="aplicarFiltros()" />
       </div>
 
       <div class="filters-group">
         <div class="select-wrapper">
-          <select class="filter-select" [(ngModel)]="filtroEstado">
+          <select class="filter-select" [(ngModel)]="filtroEstado" (ngModelChange)="aplicarFiltros()">
             <option value="todos">Todos los estados</option>
             <option value="activo">Activo</option>
             <option value="inactivo">Inactivo</option>
@@ -58,7 +59,7 @@
         </div>
 
         <div class="select-wrapper">
-          <select class="filter-select" [(ngModel)]="filtroRol">
+          <select class="filter-select" [(ngModel)]="filtroRol" (ngModelChange)="aplicarFiltros()">
             <option value="todos">Todos los roles</option>
             <option *ngFor="let rol of rolesUnicos" [value]="rol">{{ rol }}</option>
           </select>
@@ -175,7 +176,7 @@
 
       <div class="modal-actions">
         <button class="btn-guardar" (click)="editar()">💾 Guardar cambios</button>
-        <button class="btn-eliminar" (click)="eliminar(usuarioSeleccionado.id_usuario)">🗑 Eliminar</button>
+        <button class="btn-eliminar" (click)="prepararEliminar(usuarioSeleccionado)">🗑 Eliminar</button>
       </div>
 
     </div>
@@ -229,6 +230,21 @@
         <button class="btn-guardar" (click)="crear()">✚ Crear Usuario</button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+  <div class="modal-backdrop" *ngIf="mostrarModalConfirmacion" (click)="cerrarModalConfirmacion()">
+    <div class="modal-panel confirm-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header simple">
+        <h2 class="modal-title alert-title">⚠️ Eliminar Usuario</h2>
+        <p class="modal-subtitle text-center">¿Estás completamente seguro de eliminar a <b style="color: #ff2a5f;">{{ usuarioAEliminar?.username }}</b>?</p>
+        <p class="modal-subtitle text-center" style="font-size: 0.8rem; margin-top: 10px;">Esta acción es irreversible y eliminará todos sus datos.</p>
+      </div>
+      <div class="modal-actions center-actions">
+        <button class="btn-cancelar" (click)="cerrarModalConfirmacion()">Cancelar</button>
+        <button class="btn-eliminar" (click)="confirmarEliminar()">Sí, eliminar</button>
+      </div>
     </div>
   </div>
 

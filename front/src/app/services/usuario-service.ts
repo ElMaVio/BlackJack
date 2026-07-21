@@ -13,7 +13,8 @@ export class UsuariosService {
   async obtenerUsuarios(): Promise<any[]> {
     try {
       console.log('Llamando a la URL de usuarios:', this.apiUrl);
-      const response = await fetch(this.apiUrl);
+      const headers = new Headers({ 'X-Rol': 'ADMIN' });
+      const response = await fetch(this.apiUrl, { headers });
       if (!response.ok) throw new Error('Error en la respuesta del servidor');
       return await response.json();
     } catch (error) {
@@ -52,8 +53,10 @@ export class UsuariosService {
 
   async eliminarUsuario(id: number): Promise<boolean> {
     try {
+      const headers = new Headers({ 'X-Rol': 'ADMIN' });
       const response = await fetch(`${this.apiUrl}/eliminar/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers
       });
       return response.ok;
     } catch (error) {

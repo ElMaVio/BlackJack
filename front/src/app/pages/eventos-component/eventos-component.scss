@@ -169,7 +169,7 @@ $color-finalizado: #64748b;
 .modal-panel {
   background: #111936;
   border: 1px solid $border-color;
-  width: 90%; max-width: 580px;
+  width: 90%; max-width: 680px;
   border-radius: 30px; padding: 2.5rem;
   position: relative; max-height: 90vh; overflow-y: auto;
   animation: modalScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);

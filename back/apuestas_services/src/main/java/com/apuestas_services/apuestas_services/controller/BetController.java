@@ -26,19 +26,19 @@ public class BetController {
     private BetService betService;
 
     // GET
-    @GetMapping("")
+    @GetMapping
     public List<BetDto> obtenerTodasApuestas() {
         return betService.listarApuestas();
     }
 
     // POST
-    @PostMapping("")
+    @PostMapping
     public BetDto agregarApuesta(@RequestBody BetRequest apuestaNueva) {
         return betService.agregarBet(apuestaNueva);
     }
 
     // PUT
-    @PutMapping("")
+    @PutMapping
     public BetDto actualizarApuesta(@RequestBody BetActualizarRequest apuestaEditada) {
         return betService.actualizarBet(apuestaEditada);
     }

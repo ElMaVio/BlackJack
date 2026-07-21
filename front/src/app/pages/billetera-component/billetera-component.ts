@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BilleteraService } from '../../services/billetera-service';
 import { NotificationService } from '../../services/notification.service';
+import { UsuariosService } from '../../services/usuario-service';
 
 export interface Billetera {
   estado: string;
@@ -23,28 +24,52 @@ export interface Billetera {
 })
 export class BilleteraComponent implements OnInit {
   private billeteraService = inject(BilleteraService);
+  private usuariosService = inject(UsuariosService);
   private cdr = inject(ChangeDetectorRef);
   private notificationService = inject(NotificationService);
 
   billeteras: Billetera[] = [];
+  usuariosList: any[] = [];
   cargando: boolean = true;
   filtroActivo: string = 'todas';
+  busqueda: string = '';
 
   billeteraSeleccionada: Billetera | null = null;
   mostrarModal: boolean = false;
   mostrarModalCrear: boolean = false;
 
-  nuevaBilletera = {
-    id_usuario: 1001,
-    saldo: 0,
+  nuevaBilletera: any = {
+    id_usuario: null,
+    saldo: null,
     saldo_bloqueado: 0,
-    moneda: 'USD',
+    moneda: 'CLP',
     estado: 'activo'
   };
 
   get billeterasFiltradas(): Billetera[] {
-    if (this.filtroActivo === 'todas') return this.billeteras;
-    return this.billeteras.filter(b => b.estado === this.filtroActivo);
+    let filtradas = this.billeteras;
+    
+    if (this.filtroActivo !== 'todas') {
+      filtradas = filtradas.filter(b => b.estado === this.filtroActivo);
+    }
+    
+    if (this.busqueda.trim()) {
+      const termino = this.busqueda.toLowerCase();
+      filtradas = filtradas.filter(b => {
+        const idBilletera = String(b.id_billetera);
+        const idUsuario = String(b.id_usuario);
+        const username = this.obtenerNombreUsuario(b.id_usuario).toLowerCase();
+        
+        return idBilletera.includes(termino) || idUsuario.includes(termino) || username.includes(termino);
+      });
+    }
+    
+    return filtradas;
+  }
+  
+  obtenerNombreUsuario(id: number): string {
+    const usuario = this.usuariosList.find(u => u.id_usuario === id);
+    return usuario ? usuario.username : `Usuario ${id}`;
   }
 
   get totalSaldos(): number {
@@ -67,7 +92,7 @@ export class BilleteraComponent implements OnInit {
   }
 
   abrirModalCrear(): void {
-    this.nuevaBilletera = { id_usuario: 1001, saldo: 0, saldo_bloqueado: 0, moneda: 'USD', estado: 'activo' };
+    this.nuevaBilletera = { id_usuario: null, saldo: null, saldo_bloqueado: 0, moneda: 'CLP', estado: 'activo' };
     this.mostrarModalCrear = true;
     this.cdr.detectChanges();
   }
@@ -154,17 +179,19 @@ export class BilleteraComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.billeteraService.obtenerBilleteras().subscribe({
-      next: (data) => {
-        this.billeteras = data || [];
-        this.cargando = false;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al conectar con el microservicio:', error);
-        this.cargando = false;
-        this.cdr.detectChanges();
-      }
+    // Usamos Promise.all para cargar billeteras y usuarios al mismo tiempo
+    Promise.all([
+      this.billeteraService.obtenerBilleteras().toPromise(),
+      this.usuariosService.obtenerUsuarios()
+    ]).then(([billeteras, usuarios]) => {
+      this.billeteras = billeteras || [];
+      this.usuariosList = usuarios || [];
+      this.cargando = false;
+      this.cdr.detectChanges();
+    }).catch(error => {
+      console.error('Error al cargar datos:', error);
+      this.cargando = false;
+      this.cdr.detectChanges();
     });
   }
 }

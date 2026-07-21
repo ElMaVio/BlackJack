@@ -10,11 +10,18 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.web.reactive.function.client.WebClient;
+import java.util.Map;
+import java.util.HashMap;
+
 @Service
 public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     // GET - Listar todos (Solo ADMIN)
     public List<UsuarioDTO> listarUsuarios(String rolSolicitante) {
@@ -39,6 +46,30 @@ public class UsuarioService {
         
         usuario.setEstado(usuarioNuevo.getEstado());
         Usuario guardado = usuarioRepository.save(usuario);
+
+        // LÓGICA DE NEGOCIO: Conexión 1 a 1 automática con Billetera
+        // Le damos un bono de 5000 pesos de bienvenida
+        try {
+            Map<String, Object> walletRequest = new HashMap<>();
+            walletRequest.put("id_usuario", guardado.getId_usuario());
+            walletRequest.put("saldo", 5000.0);
+            walletRequest.put("saldo_bloqueado", 0.0);
+            walletRequest.put("moneda", "CLP");
+            walletRequest.put("estado", "ACTIVA");
+            walletRequest.put("fecha_creacion", new java.util.Date());
+
+            webClientBuilder.build().post()
+                .uri("http://localhost:7576/Wallet")
+                .bodyValue(walletRequest)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block(); // Llamada síncrona
+            System.out.println("Billetera creada con éxito para el usuario ID: " + guardado.getId_usuario());
+        } catch (Exception e) {
+            // Manejamos el error si el microservicio de billeteras está apagado
+            System.err.println("Advertencia: No se pudo crear la billetera automáticamente porque el servicio está apagado. Detalle: " + e.getMessage());
+        }
+
         return mapToDTO(guardado);
     }
 

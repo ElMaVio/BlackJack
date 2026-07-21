@@ -1,0 +1,128 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ApuestasServicesApplication<apuestas-services>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.apuestas_services.apuestas_services.ApuestasServicesApplication",
+            "projectName": "apuestas-services",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CuotasServicesApplication<cuotas_services>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.cuotas_services.cuotas_service.CuotasServicesApplication",
+            "projectName": "cuotas_services",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-EventosMicrosereviciosApplication<eventos-microserevicios>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "eventos_microserevicios.eventos_microserevicios.EventosMicrosereviciosApplication",
+            "projectName": "eventos-microserevicios",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-JuegosMicroservicioApplication<juegos-microservicio>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "juegos_microservicio.juegos_microservicio.JuegosMicroservicioApplication",
+            "projectName": "juegos-microservicio",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-LimitesResponsablesMicroserviciosApplication<LimitesResponsables-Microservicios>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "LimitesResponsables_Microservicios.LimitesResponsables_Microservicios.LimitesResponsablesMicroserviciosApplication",
+            "projectName": "LimitesResponsables-Microservicios",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MercadoServicesApplication<mercado_services>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.mercado_services.MercadoServicesApplication",
+            "projectName": "mercado_services",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TransaccionServicesApplication<transaccion_services>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.transaccion_services.transaction_service.TransaccionServicesApplication",
+            "projectName": "transaccion_services",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-UsuariosMicroserviciosApplication<usuarios-microservicios>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "usuarios_microservicios.usuarios_microservicios.UsuariosMicroserviciosApplication",
+            "projectName": "usuarios-microservicios",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-WalletServiceApplication<wallet-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.wallet_service.wallet_service.WalletServiceApplication",
+            "projectName": "wallet-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CuotasServicesApplication<cuotas_services>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.cuotas_services.cuotas_services.CuotasServicesApplication",
+            "projectName": "cuotas_services",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MercadoServicesApplication<mercado_services>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.mercado_services.mercado_services.MercadoServicesApplication",
+            "projectName": "mercado_services",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TransaccionServicesApplication<transaccion_services>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.transaccion_services.transaccion_services.TransaccionServicesApplication",
+            "projectName": "transaccion_services",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

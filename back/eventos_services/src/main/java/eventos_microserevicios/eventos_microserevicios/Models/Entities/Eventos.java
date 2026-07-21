@@ -13,6 +13,8 @@ public class Eventos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idEvento;
 
+    private String tipo;
+
     private String nombre;
 
     private String deporte;

@@ -661,6 +661,29 @@
       color: var(--white);
     }
   }
+
+  .modal-input {
+    background: var(--white-faint);
+    border: 1px solid rgba(139, 47, 201, 0.25);
+    border-radius: 10px;
+    color: var(--white);
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    padding: 12px 16px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.25s;
+
+    &:focus {
+      outline: none;
+      border-color: rgba(168, 85, 247, 0.6);
+      background: rgba(139, 47, 201, 0.08);
+    }
+
+    &::placeholder { color: var(--white-muted); }
+    
+    option { background: #1a0533; color: var(--white); }
+  }
 }
 
 .modal-actions {

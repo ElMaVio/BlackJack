@@ -1,0 +1,74 @@
+<main class="main-content">
+  <div class="header-badge">🏦 Sistema Financiero</div>
+  
+  <div class="title-container">
+    <h1>Cajero <span class="title-accent">Automático</span></h1>
+  </div>
+
+  <div class="dashboard-grid">
+    
+    <!-- Columna Izquierda: Formulario -->
+    <div class="glass-card">
+      <h3>Nueva Transacción</h3>
+      
+      <div class="wallet-info">
+        <p><strong>Usuario:</strong> <span>{{ usuarioActual.username }}</span></p>
+        <p><strong>Billetera Asignada:</strong> <span>#{{ usuarioActual.idBilleteraAsignada }}</span></p>
+        <p style="flex-direction: column; align-items: flex-start; margin-top: 20px;">
+          <strong>Saldo Actual:</strong> 
+          <span class="saldo-destacado">${{ usuarioActual.saldo | number:'1.0-2' }} CLP</span>
+        </p>
+      </div>
+
+      <hr style="border: 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
+
+      <div class="form-group">
+        <label>Tipo de Operación</label>
+        <select [(ngModel)]="tipo" class="modal-input">
+          <option value="DEPOSITO">↓ Depositar Fondos</option>
+          <option value="RETIRO">↑ Retirar Fondos</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Monto (Mínimo $2500 CLP)</label>
+        <input type="number" [(ngModel)]="monto" min="2500" class="modal-input" placeholder="0.00">
+      </div>
+      
+      <button class="btn-procesar" (click)="procesarTransaccion()">Procesar Transacción</button>
+    </div>
+
+    <!-- Columna Derecha: Historial -->
+    <div class="glass-card">
+      <h3>Historial de Movimientos</h3>
+      
+      <table class="modern-table" *ngIf="transacciones.length > 0">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Operación</th>
+            <th>Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of transacciones">
+            <td>{{ t.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <span class="type-badge" [ngClass]="t.tipo_transaccion === 'DEPOSITO' ? 'deposito' : 'retiro'">
+                {{ t.tipo_transaccion }}
+              </span>
+            </td>
+            <td class="monto" [ngClass]="{'positivo': t.tipo_transaccion === 'DEPOSITO', 'negativo': t.tipo_transaccion === 'RETIRO'}">
+              {{ t.tipo_transaccion === 'DEPOSITO' ? '+' : '-' }}${{ t.monto | number:'1.0-2' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="empty-state" *ngIf="transacciones.length === 0">
+        <i class="ti ti-receipt" style="font-size: 40px; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
+        Aún no tienes transacciones registradas.
+      </div>
+    </div>
+  </div>
+</main>

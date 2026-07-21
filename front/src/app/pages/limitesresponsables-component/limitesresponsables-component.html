@@ -182,7 +182,11 @@
           class="form-input"
           type="number"
           placeholder="Ej: 1"
+          list="usuariosDatalist"
           [(ngModel)]="nuevoLimite.usuariosIdUsuario">
+        <datalist id="usuariosDatalist">
+          <option *ngFor="let u of usuariosList" [value]="u.id_usuario">{{ u.username }}</option>
+        </datalist>
       </div>
       <div class="form-group">
         <label class="form-label">Límite Diario ($)</label>

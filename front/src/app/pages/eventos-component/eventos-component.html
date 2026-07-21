@@ -56,18 +56,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let evento of eventosFiltrados; let i = index"
-            class="table-row"
-            [style.animation-delay]="i * 0.05 + 's'">
-
+          <tr *ngFor="let evento of eventosFiltrados">
             <td class="td-id">#{{ evento.idEvento }}</td>
 
             <td class="td-usuario">
-              <div class="avatar">{{ evento.deporte.substring(0,1).toUpperCase() }}</div>
-              <div>
-                <span class="username-text">{{ evento.nombre }}</span>
-                <small class="display-block">{{ evento.deporte }}</small>
+              <div class="avatar" [ngStyle]="{'background': evento.tipo === 'CASINO' ? 'linear-gradient(135deg, #FF0055, #FF5500)' : ''}">
+                {{ evento.nombre.charAt(0) }}
+              </div>
+              <div class="user-info">
+                <span class="user-name">{{ evento.nombre }}</span>
+                <span class="user-email">{{ evento.deporte }} | {{ evento.liga_torneo || 'Amistoso' }}</span>
               </div>
             </td>
 
@@ -84,12 +82,7 @@
             <td class="td-id">{{ evento.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</td>
 
             <td>
-              <span class="role-badge"
-                [class.admin]="evento.estado === 'EN VIVO'"
-                [class.jugador]="evento.estado === 'PROGRAMADO'"
-                [class.bloqueado]="evento.estado === 'FINALIZADO'">
-                {{ evento.estado }}
-              </span>
+              <span class="badge" [ngClass]="evento.estado.toLowerCase()">{{ evento.estado }}</span>
             </td>
 
             <td class="td-actions">
@@ -112,7 +105,9 @@
       <button class="modal-close" (click)="cerrarModal()">✕</button>
 
       <div class="modal-header">
-        <div class="avatar lg">{{ eventoSeleccionado.deporte.substring(0,1) }}</div>
+        <div class="avatar lg" [ngStyle]="{'background': eventoSeleccionado.tipo === 'CASINO' ? 'linear-gradient(135deg, #FF0055, #FF5500)' : ''}">
+          {{ eventoSeleccionado.deporte?.substring(0,1) || 'E' }}
+        </div>
         <div>
           <h2 class="modal-title">Editar Evento <span class="modal-id">#{{ eventoSeleccionado.idEvento }}</span></h2>
           <p class="modal-subtitle">{{ eventoSeleccionado.nombre }}</p>
@@ -120,6 +115,9 @@
       </div>
 
       <div class="modal-form">
+        <datalist id="categorias-sugeridas-editar">
+          <option *ngFor="let cat of categoriasSugeridasEditar" [value]="cat"></option>
+        </datalist>
 
         <div class="form-group">
           <label class="form-label">Nombre del Evento</label>
@@ -127,9 +125,15 @@
         </div>
 
         <div class="row-inputs">
-          <div class="form-group">
-            <label class="form-label">Deporte</label>
-            <input class="form-input" [(ngModel)]="eventoSeleccionado.deporte" placeholder="Ej: Fútbol" />
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">TIPO Y DEPORTE</label>
+            <div style="display: flex; gap: 10px;">
+              <select [(ngModel)]="eventoSeleccionado.tipo" class="form-input" style="flex: 1;">
+                <option value="DEPORTE">Deporte</option>
+                <option value="CASINO">Casino</option>
+              </select>
+              <input class="form-input" [(ngModel)]="eventoSeleccionado.deporte" placeholder="Ej: Fútbol" list="categorias-sugeridas-editar" style="flex: 1;" />
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Liga / Torneo</label>
@@ -149,9 +153,12 @@
         </div>
 
         <div class="row-inputs">
-          <div class="form-group">
-            <label class="form-label">Fecha y Hora de Inicio</label>
-            <input class="form-input" type="datetime-local" [(ngModel)]="eventoSeleccionado.fechaInicio" />
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">FECHA DE INICIO</label>
+            <div style="display: flex; gap: 10px;">
+              <input class="form-input" type="date" [(ngModel)]="fechaEditar" style="flex: 6;" />
+              <input class="form-input" type="time" [(ngModel)]="horaEditar" style="flex: 4;" />
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Estado</label>
@@ -167,7 +174,7 @@
 
       <div class="modal-actions">
         <button class="btn-guardar" (click)="editar()">💾 Guardar Cambios</button>
-        <button class="btn-eliminar" (click)="eliminar(eventoSeleccionado.idEvento)">🗑 Eliminar Evento</button>
+        <button class="btn-eliminar" (click)="eliminar()">🗑 Eliminar Evento</button>
       </div>
     </div>
   </div>
@@ -186,6 +193,9 @@
       </div>
 
       <div class="modal-form">
+        <datalist id="categorias-sugeridas-crear">
+          <option *ngFor="let cat of categoriasSugeridasCrear" [value]="cat"></option>
+        </datalist>
 
         <div class="form-group">
           <label class="form-label">Nombre del Evento</label>
@@ -193,30 +203,41 @@
         </div>
 
         <div class="row-inputs">
-          <div class="form-group">
-            <label class="form-label">Equipo Local</label>
-            <input class="form-input" [(ngModel)]="nuevoEvento.equipoLocal" placeholder="Ej: Real Madrid" />
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">TIPO Y CATEGORÍA</label>
+            <div style="display: flex; gap: 10px;">
+              <select [(ngModel)]="nuevoEvento.tipo" class="form-input" style="flex: 1;">
+                <option value="DEPORTE">Deporte</option>
+                <option value="CASINO">Casino</option>
+              </select>
+              <input type="text" [(ngModel)]="nuevoEvento.deporte" class="form-input" placeholder="Ej: Fútbol o Poker" list="categorias-sugeridas-crear" style="flex: 1;">
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Equipo Visitante</label>
-            <input class="form-input" [(ngModel)]="nuevoEvento.equipoVisitante" placeholder="Ej: Chelsea FC" />
+            <label class="form-label">LIGA / TORNEO</label>
+            <input type="text" [(ngModel)]="nuevoEvento.liga" class="form-input" placeholder="Opcional">
           </div>
         </div>
 
         <div class="row-inputs">
           <div class="form-group">
-            <label class="form-label">Deporte</label>
-            <input class="form-input" [(ngModel)]="nuevoEvento.deporte" placeholder="Ej: Fútbol" />
+            <label class="form-label">EQUIPO LOCAL</label>
+            <input type="text" [(ngModel)]="nuevoEvento.equipoLocal" class="form-input" placeholder="Participante 1">
           </div>
           <div class="form-group">
-            <label class="form-label">Liga / Torneo</label>
-            <input class="form-input" [(ngModel)]="nuevoEvento.liga" placeholder="Ej: Champions League" />
+            <label class="form-label">EQUIPO VISITANTE</label>
+            <input type="text" [(ngModel)]="nuevoEvento.equipoVisitante" class="form-input" placeholder="Participante 2 (Opcional)">
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Fecha y Hora de Inicio</label>
-          <input class="form-input" type="datetime-local" [(ngModel)]="nuevoEvento.fechaInicio" />
+        <div class="row-inputs">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">FECHA DE INICIO</label>
+            <div style="display: flex; gap: 10px;">
+              <input type="date" [(ngModel)]="fechaCrear" class="form-input" style="flex: 6;">
+              <input type="time" [(ngModel)]="horaCrear" class="form-input" style="flex: 4;">
+            </div>
+          </div>
         </div>
 
       </div>

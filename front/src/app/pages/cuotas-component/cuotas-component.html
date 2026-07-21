@@ -1,0 +1,92 @@
+<main class="main-content">
+  <div class="header-badge">📊 Analytics Engine</div>
+  <div class="title-container">
+    <h1>Panel de <span class="title-accent">Cuotas</span></h1>
+  </div>
+
+  <div *ngIf="isOffline" class="alert-box error">
+    ⚠️ Servicio de Cuotas desconectado o tabla vacía.
+  </div>
+
+  <!-- Estado Vacío -->
+  <div class="empty-state-cyber" *ngIf="cuotas.length === 0">
+    <div class="icon-glow">📈</div>
+    <h2>No hay cuotas activas</h2>
+    <p>El motor de analíticas está vacío. Puedes inyectar las cuotas iniciales en la base de datos para comenzar.</p>
+    <button class="btn-guardar btn-glow" (click)="inyectarMocks()" [disabled]="isInjecting">
+      {{ isInjecting ? 'Conectando con DB...' : 'Inyectar Cuotas de Prueba' }}
+    </button>
+  </div>
+
+  <div class="cuotas-grid" *ngIf="cuotas.length > 0">
+    <div class="glass-card cuota-card" *ngFor="let cuota of cuotas">
+      <div class="cuota-header">
+        <span class="resultado">{{ cuota.resultado }}</span>
+        <span class="status-badge" [ngClass]="cuota.estado.toLowerCase()">{{ cuota.estado }}</span>
+      </div>
+      
+      <div class="cuota-body">
+        <div class="valor-cuota">{{ cuota.valor | number:'1.2-2' }}</div>
+        
+        <div class="probabilidad-container">
+          <div class="circular-progress">
+            <svg viewBox="0 0 36 36" class="circular-chart">
+              <path class="circle-bg"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path class="circle"
+                [attr.stroke-dasharray]="cuota.probabilidad + ', 100'"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <text x="18" y="20.35" class="percentage">{{ cuota.probabilidad }}%</text>
+            </svg>
+          </div>
+          <span class="prob-label">prob.</span>
+        </div>
+      </div>
+
+      <!-- Footer para edición -->
+      <div class="cuota-footer">
+        <button class="btn-editar-mini" (click)="abrirModalEditar(cuota)">
+          ⚙️ Editar Algoritmo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MODAL DE EDICIÓN DE CUOTA       -->
+  <!-- =============================== -->
+  <div class="modal-backdrop" *ngIf="mostrarModalEditar" (click)="cerrarModalEditar()">
+    <div class="modal-panel admin-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarModalEditar()">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-icon-crear">⚙️</div>
+        <div>
+          <h2 class="modal-title">Ajustar Cuota</h2>
+          <p class="modal-subtitle">{{ cuotaEditando?.resultado }}</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Valor (Multiplicador)</label>
+          <input class="form-input monto-input highlight-cyan" type="number" step="0.01" [(ngModel)]="nuevoValor" min="1.01" />
+        </div>
+        
+        <div class="form-group" style="margin-top: 15px;">
+          <label class="form-label">Probabilidad Estimada (%)</label>
+          <input class="form-input" type="number" [(ngModel)]="nuevaProbabilidad" min="0" max="100" />
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 25px;">
+        <button class="btn-guardar full" [disabled]="isSaving" (click)="guardarCuota()" 
+                [ngClass]="{'btn-loading': isSaving}">
+          {{ isSaving ? 'Guardando en DB...' : 'Guardar Cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

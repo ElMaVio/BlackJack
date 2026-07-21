@@ -28,6 +28,7 @@ public class EventosServices {
     public String crearEvento(EventosRequests request) {
         try {
             Eventos evento = new Eventos();
+            evento.setTipo(request.getTipo());
             evento.setNombre(request.getNombre());
             evento.setDeporte(request.getDeporte());
             evento.setLiga(request.getLiga());
@@ -48,6 +49,7 @@ public class EventosServices {
         Optional<Eventos> encontrado = eventosRepository.findById(request.getIdEvento());
         if (encontrado.isPresent()) {
             Eventos evento = encontrado.get();
+            evento.setTipo(request.getTipo());
             evento.setNombre(request.getNombre());
             evento.setDeporte(request.getDeporte());
             evento.setLiga(request.getLiga());
@@ -75,6 +77,7 @@ public class EventosServices {
     private EventosDTO convertirADto(Eventos evento) {
         EventosDTO dto = new EventosDTO();
         dto.setIdEvento(evento.getIdEvento());
+        dto.setTipo(evento.getTipo());
         dto.setNombre(evento.getNombre());
         dto.setDeporte(evento.getDeporte());
         dto.setLiga(evento.getLiga());

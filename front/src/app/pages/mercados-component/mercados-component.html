@@ -1,0 +1,149 @@
+<main class="main-content">
+  <div class="title-container">
+    <div class="header-badge" [ngClass]="{'admin-badge': isAdminMode}">
+      {{ isAdminMode ? '⚙️ Panel de Administración' : '📈 Cuotas & Probabilidades' }}
+    </div>
+    
+    <div class="title-row" style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Mercados <span class="title-accent">{{ isAdminMode ? 'Globales' : 'Disponibles' }}</span></h1>
+      
+      <!-- Admin Toggle -->
+      <div class="admin-toggle-wrapper" style="display: flex; align-items: center; gap: 10px;">
+        <span style="color: var(--white-muted); font-size: 14px; font-weight: 500;">Modo Admin</span>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="isAdminMode">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    <p>{{ isAdminMode ? 'Gestiona, resuelve y orquesta los mercados deportivos.' : 'Selecciona una cuota para apostar rápidamente in-situ.' }}</p>
+  </div>
+
+  <div class="events-grid">
+    <div class="glass-card event-card" *ngFor="let evento of eventos" [class.admin-border]="isAdminMode">
+      <div class="event-header">
+        <h3>{{ evento.nombre }}</h3>
+        <span class="badge-sport">{{ evento.deporte }}</span>
+      </div>
+      
+      <hr>
+      
+      <div class="market-section">
+        <p style="margin-bottom: 10px;">Mercado 1X2</p>
+        <div class="odds-container">
+          <button *ngFor="let mercado of evento.mercados" 
+                  class="btn-odd" 
+                  [ngClass]="{'draw': mercado.tipo.includes('Empate'), 'disabled': mercado.estado !== 'ACTIVO' && !isAdminMode, 'admin-btn': isAdminMode}" 
+                  (click)="seleccionarMercado(evento, mercado)">
+            
+            <div class="market-name-row" style="display: flex; justify-content: space-between; width: 100%;">
+              <span class="market-name">{{ mercado.tipo }}</span>
+              <span class="market-status" *ngIf="mercado.estado !== 'ACTIVO'" [ngClass]="mercado.estado.toLowerCase()">
+                {{ mercado.estado }}
+              </span>
+            </div>
+            
+            <span class="odd-value" *ngIf="mercado.estado === 'ACTIVO' || isAdminMode">
+              {{ isAdminMode ? '⚙️ Gestionar' : mercado.cuota | number:'1.2-2' }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MODAL JUGADOR (APUESTA RÁPIDA)  -->
+  <!-- =============================== -->
+  <div class="modal-backdrop" *ngIf="mostrarModalApuesta" (click)="cerrarModalApuesta()">
+    <div class="modal-panel bet-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarModalApuesta()">✕</button>
+
+      <div class="modal-header">
+        <h2 class="modal-title">Apuesta Rápida</h2>
+        <p class="modal-subtitle">{{ eventoSeleccionado?.nombre }}</p>
+      </div>
+
+      <div class="modal-body">
+        <div class="bet-summary">
+          <div class="bet-row">
+            <span>Mercado:</span>
+            <strong>{{ mercadoSeleccionado?.tipo }}</strong>
+          </div>
+          <div class="bet-row">
+            <span>Cuota:</span>
+            <strong class="highlight-cyan">x{{ mercadoSeleccionado?.cuota | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
+          <label class="form-label">Usuario Apostador</label>
+          <select class="form-input select-cyber" [(ngModel)]="idUsuarioApostador" (change)="onUsuarioChange()">
+            <option [ngValue]="null">Selecciona tu usuario...</option>
+            <option *ngFor="let u of usuariosList" [value]="u.id_usuario">{{ u.username }}</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+          <label class="form-label">Billetera a Descontar</label>
+          <input type="text" class="form-input" [value]="idBilleteraApostador ? '#' + idBilleteraApostador : 'Requiere usuario'" disabled />
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+          <label class="form-label">Monto a apostar (CLP)</label>
+          <input class="form-input monto-input" type="number" [(ngModel)]="montoApuesta" min="100" />
+        </div>
+        
+        <div class="bet-potential">
+          <span>Ganancia Potencial:</span>
+          <span class="potential-win">${{ (montoApuesta * (mercadoSeleccionado?.cuota || 0)) | number:'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 25px;">
+        <button class="btn-guardar full" (click)="confirmarApuesta()">Apostar Ahora</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MODAL ADMIN (GESTIONAR MERCADO) -->
+  <!-- =============================== -->
+  <div class="modal-backdrop" *ngIf="mostrarModalAdmin" (click)="cerrarModalAdmin()">
+    <div class="modal-panel admin-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarModalAdmin()" [disabled]="isResolving">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-icon-crear">⚙️</div>
+        <div>
+          <h2 class="modal-title">Resolver Mercado</h2>
+          <p class="modal-subtitle">{{ eventoSeleccionado?.nombre }} - {{ mercadoSeleccionado?.tipo }}</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="alert-box warning">
+          <strong>Atención Orquestación:</strong> Al marcar como VICTORIA o CANCELADO, el sistema buscará las apuestas vinculadas y procesará los depósitos o devoluciones a las billeteras correspondientes automáticamente.
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
+          <label class="form-label">Estado de Resolución</label>
+          <select class="form-input select-cyber" [(ngModel)]="estadoResolucion">
+            <option value="ACTIVO">ACTIVO (Abierto)</option>
+            <option value="VICTORIA">✅ VICTORIA (Pagar Ganadores)</option>
+            <option value="DERROTA">❌ DERROTA (Perdida)</option>
+            <option value="EMPATE">⚖️ EMPATE (Anulado)</option>
+            <option value="CANCELADO">↩️ CANCELADO (Reembolso)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 25px;">
+        <button class="btn-guardar full" [disabled]="isResolving" (click)="resolverMercado()" 
+                [ngClass]="{'btn-loading': isResolving}">
+          {{ isResolving ? 'Orquestando Pagos...' : 'Aplicar Resolución' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

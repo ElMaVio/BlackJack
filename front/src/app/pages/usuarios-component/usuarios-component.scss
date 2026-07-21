@@ -609,6 +609,12 @@
   to   { opacity:1; transform:translateY(0) scale(1); }
 }
 
+.confirm-panel {
+  max-width: 400px;
+  border-color: rgba(248,113,113,0.4);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 60px rgba(248,113,113,0.15);
+}
+
 .modal-header {
   display: flex;
   align-items: center;
@@ -624,6 +630,11 @@
     color: var(--white);
     margin: 0;
     letter-spacing: -0.5px;
+    
+    &.alert-title {
+      color: var(--red);
+      font-style: normal;
+    }
   }
 
   .modal-subtitle {
@@ -743,6 +754,38 @@
       background: rgba(248,113,113,0.2);
       box-shadow: 0 4px 20px rgba(248,113,113,0.2);
     }
+  }
+  
+  .btn-cancelar {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    color: var(--white-muted);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--white);
+      border-color: rgba(255,255,255,0.4);
+    }
+  }
+}
+
+.center-actions {
+  justify-content: center;
+  margin-top: 10px;
+  
+  .btn-cancelar, .btn-eliminar {
+    flex: 1;
+    text-align: center;
   }
 }
 

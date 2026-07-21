@@ -17,3 +17,24 @@ html, body{
   margin: 0;
   padding: 0;
 }
+
+:root {
+  --purple-deep:    #2D0A4E;
+  --purple-mid:     #5B1FA8;
+  --purple-bright:  #8B2FC9;
+  --purple-glow:    #A855F7;
+  --pink-hot:       #F72585;
+  --pink-soft:      #FF6BAE;
+  --black-deep:     #050508;
+  --black-card:     #0D0D18;
+  --black-elevated: #13131F;
+  --white:          #FFFFFF;
+  --white-muted:    rgba(255, 255, 255, 0.55);
+  --white-faint:    rgba(255, 255, 255, 0.07);
+  --green:          #4ade80;
+  --yellow:         #fbbf24;
+  --red:            #f87171;
+  --cyan-glow:      #00f3ff;
+  --glass-bg:       rgba(20, 20, 30, 0.7);
+  --text-muted:     #8e8e9f;
+}

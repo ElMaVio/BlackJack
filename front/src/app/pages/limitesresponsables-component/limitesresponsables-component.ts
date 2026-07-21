@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LimitesService } from '../../services/limitesresponsables-service';
 import { NotificationService } from '../../services/notification.service';
+import { UsuariosService } from '../../services/usuario-service';
 
 @Component({
   selector: 'app-limitesresponsables',
@@ -19,6 +20,8 @@ export class LimitesresponsablesComponent implements OnInit {
 
   busqueda: string = '';
 
+  usuariosList: any[] = [];
+
   mostrarModal: boolean = false;
   mostrarModalCrear: boolean = false;
   mostrarModalEliminar: boolean = false;
@@ -32,6 +35,7 @@ export class LimitesresponsablesComponent implements OnInit {
 
   constructor(
     private limitesService: LimitesService,
+    private usuariosService: UsuariosService,
     private cdr: ChangeDetectorRef,
     private notificationService: NotificationService
   ) {}
@@ -44,9 +48,13 @@ export class LimitesresponsablesComponent implements OnInit {
   async cargarLimites() {
     this.cargando = true;
     try {
-      const datos = await this.limitesService.obtenerLimites();
-      this.limites = datos || [];
+      const [datosLimites, datosUsuarios] = await Promise.all([
+        this.limitesService.obtenerLimites(),
+        this.usuariosService.obtenerUsuarios()
+      ]);
+      this.limites = datosLimites || [];
       this.limitesFiltrados = [...this.limites];
+      this.usuariosList = datosUsuarios || [];
     } catch (error) {
       console.error(error);
     } finally {
@@ -82,6 +90,13 @@ export class LimitesresponsablesComponent implements OnInit {
       this.notificationService.showError('Por favor complete todos los campos.');
       return;
     }
+
+    const usuarioExiste = this.usuariosList.some(u => u.id_usuario == this.nuevoLimite.usuariosIdUsuario);
+    if (!usuarioExiste) {
+      this.notificationService.showError('El ID ingresado no corresponde a ningún usuario registrado.');
+      return;
+    }
+
     this.mostrarModalCrear = false;
     this.cargando = true;
     const respuesta = await this.limitesService.crearLimite(this.nuevoLimite);

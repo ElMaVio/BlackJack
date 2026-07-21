@@ -5,6 +5,9 @@ import { BilleteraComponent } from './pages/billetera-component/billetera-compon
 import { LimitesresponsablesComponent } from './pages/limitesresponsables-component/limitesresponsables-component';
 import { EventosComponent } from './pages/eventos-component/eventos-component';
 import { ApuestasComponent } from './pages/apuestas-component/apuestas-component';
+import { MercadosComponent } from './pages/mercados-component/mercados-component';
+import { TransaccionesComponent } from './pages/transacciones-component/transacciones-component';
+import { CuotasComponent } from './pages/cuotas-component/cuotas-component';
 
 export const routes: Routes = [
   {
@@ -35,6 +38,18 @@ export const routes: Routes = [
   {
     path: 'apuestas',
     component: ApuestasComponent
+  },
+  {
+    path: 'mercados',
+    component: MercadosComponent
+  },
+  {
+    path: 'transacciones',
+    component: TransaccionesComponent
+  },
+  {
+    path: 'cuotas',
+    component: CuotasComponent
   },
   {
     path: '**',

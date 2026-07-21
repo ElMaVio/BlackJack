@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuario-service';
 import { NotificationService } from '../../services/notification.service';
+import { BilleteraService } from '../../services/billetera-service';
 
 @Component({
   selector: 'app-ver-usuarios',
@@ -24,8 +25,11 @@ export class VerUsuariosComponent implements OnInit {
 
   mostrarModal: boolean = false;
   mostrarModalCrear: boolean = false;
+  mostrarModalConfirmacion: boolean = false;
 
   usuarioSeleccionado: any = null;
+  usuarioAEliminar: any = null;
+  
   nuevoUsuario: any = {
     username: '',
     email: '',
@@ -37,7 +41,8 @@ export class VerUsuariosComponent implements OnInit {
   constructor(
     private usuariosService: UsuariosService,
     private cdr: ChangeDetectorRef,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private billeteraService: BilleteraService
   ) {}
 
   async ngOnInit() {
@@ -61,7 +66,7 @@ export class VerUsuariosComponent implements OnInit {
       this.aplicarFiltros();
     } catch (error) {
       console.error(error);
-    } {
+    } finally {
       this.cargando = false;
       this.cdr.detectChanges();
     }
@@ -119,6 +124,24 @@ export class VerUsuariosComponent implements OnInit {
     const ok = await this.usuariosService.crearUsuario(this.nuevoUsuario);
     if (ok) {
       this.notificationService.showSuccess('Usuario creado con éxito');
+      try {
+        const usuariosActualizados = await this.usuariosService.obtenerUsuarios();
+        const usuarioCreado = usuariosActualizados.find(u => u.email === this.nuevoUsuario.email);
+        
+        if (usuarioCreado) {
+          const nuevaBilletera = {
+            id_usuario: usuarioCreado.id_usuario,
+            saldo: 5000,
+            saldo_bloqueado: 0,
+            moneda: 'CLP',
+            estado: 'activa'
+          };
+          await this.billeteraService.crearBilletera(nuevaBilletera).toPromise();
+          this.notificationService.showSuccess(`Billetera en CLP creada para el usuario`);
+        }
+      } catch (err) {
+        console.error('No se pudo crear la billetera asociada', err);
+      }
     } else {
       this.notificationService.showError('Error al crear usuario');
     }
@@ -143,23 +166,43 @@ export class VerUsuariosComponent implements OnInit {
     await this.cargarUsuarios();
   }
 
-  async eliminar(id: number) {
-    if (!id) {
+  prepararEliminar(usuario: any) {
+    this.usuarioAEliminar = usuario;
+    this.mostrarModalConfirmacion = true;
+    this.mostrarModal = false; // Cerramos el modal de edición si estaba abierto
+  }
+
+  cerrarModalConfirmacion() {
+    this.mostrarModalConfirmacion = false;
+    this.usuarioAEliminar = null;
+  }
+
+  async confirmarEliminar() {
+    if (!this.usuarioAEliminar || !this.usuarioAEliminar.id_usuario) {
       this.notificationService.showError('No se pudo identificar el ID del usuario.');
       return;
     }
 
-    if (confirm('¿Está seguro de eliminar este usuario?')) {
-      this.cargando = true;
-      this.mostrarModal = false;
+    this.cargando = true;
+    this.mostrarModalConfirmacion = false;
+    const id = this.usuarioAEliminar.id_usuario;
 
-      const ok = await this.usuariosService.eliminarUsuario(id);
-      if (ok) {
-        this.notificationService.showSuccess('Usuario eliminado');
-      } else {
-        this.notificationService.showError('Error al eliminar usuario');
+    const ok = await this.usuariosService.eliminarUsuario(id);
+    if (ok) {
+      this.notificationService.showSuccess('Usuario eliminado');
+      try {
+        const billeteras = await this.billeteraService.obtenerBilleteras().toPromise();
+        const billeteraDelUsuario = billeteras?.find(b => b.id_usuario === id);
+        if (billeteraDelUsuario) {
+          await this.billeteraService.eliminarBilletera(billeteraDelUsuario.id_billetera).toPromise();
+          this.notificationService.showSuccess(`Billetera #${billeteraDelUsuario.id_billetera} eliminada automáticamente`);
+        }
+      } catch (err) {
+        console.error('No se pudo eliminar la billetera asociada', err);
       }
-      await this.cargarUsuarios();
+    } else {
+      this.notificationService.showError('Error al eliminar usuario');
     }
+    await this.cargarUsuarios();
   }
 }

@@ -15,7 +15,11 @@ export class NotificationService {
 
   show(message: string, type: 'success' | 'error' | 'info' = 'info') {
     const id = this.idCounter++;
-    this.toasts.update(current => [...current, { message, type, id }]);
+    
+    // Defer update to avoid NG0100 ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => {
+      this.toasts.update(current => [...current, { message, type, id }]);
+    });
     
     // Auto remove after 3 seconds
     setTimeout(() => {

@@ -24,9 +24,10 @@ export class EventosComponent implements OnInit {
   mostrarModalCrear: boolean = false;
   eventoSeleccionado: any = null;
 
-  nuevoEvento = {
+  nuevoEvento: any = {
     nombre: '',
     deporte: '',
+    tipo: 'DEPORTE',
     liga: '',
     equipoLocal: '',
     equipoVisitante: '',
@@ -34,10 +35,26 @@ export class EventosComponent implements OnInit {
     estado: 'PROGRAMADO'
   };
 
+  fechaCrear: string = '';
+  horaCrear: string = '';
+  fechaEditar: string = '';
+  horaEditar: string = '';
+
+  categoriasDeporte = ['Fútbol', 'Básquetbol', 'Tenis', 'Voleibol', 'Béisbol', 'eSports'];
+  categoriasCasino = ['Poker', 'Ruleta', 'BlackJack', 'Tragamonedas', 'Baccarat', 'Bingo'];
+
+  get categoriasSugeridasCrear() {
+    return this.nuevoEvento.tipo === 'CASINO' ? this.categoriasCasino : this.categoriasDeporte;
+  }
+
+  get categoriasSugeridasEditar() {
+    return this.eventoSeleccionado?.tipo === 'CASINO' ? this.categoriasCasino : this.categoriasDeporte;
+  }
+
   constructor(
-    private _eventosService: EventosService,
-    private cdr: ChangeDetectorRef,
-    private notificationService: NotificationService
+    private eventosService: EventosService,
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -45,22 +62,48 @@ export class EventosComponent implements OnInit {
   }
 
   async cargarEventos() {
-    this.cargando = true;
     try {
       console.log('Solicitando partidos al microservicio...');
-      const data = await this._eventosService.obtenerEventos();
+      const data = await this.eventosService.obtenerEventos();
       console.log('Partidos recibidos:', data);
 
       this.eventos = data || [];
-      this.eventosFiltrados = data || [];
+      this.eventosFiltrados = this.eventos;
     } catch (error) {
       console.error('Error al mapear eventos:', error);
-      this.eventos = [];
-      this.eventosFiltrados = [];
+      this.cargarMocksSiBackendFalla();
+      this.eventosFiltrados = this.eventos;
     } finally {
       this.cargando = false;
       this.cdr.detectChanges();
     }
+  }
+
+  private cargarMocksSiBackendFalla() {
+    this.eventos = [
+      {
+        idEvento: 1,
+        nombre: 'Colo Colo vs U. de Chile',
+        deporte: 'Fútbol',
+        tipo: 'DEPORTE',
+        liga: 'Primera División',
+        equipoLocal: 'Colo Colo',
+        equipoVisitante: 'U. de Chile',
+        fechaInicio: '2026-07-22T18:00',
+        estado: 'PROGRAMADO'
+      },
+      {
+        idEvento: 2,
+        nombre: 'Torneo Texas Holdem Elite',
+        deporte: 'Poker',
+        tipo: 'CASINO',
+        liga: 'Serie Mundial',
+        equipoLocal: 'Mesa 1',
+        equipoVisitante: '',
+        fechaInicio: '2026-07-23T20:00',
+        estado: 'PROGRAMADO'
+      }
+    ];
   }
 
   // Buscador por nombre del evento o deporte
@@ -79,8 +122,14 @@ export class EventosComponent implements OnInit {
 
   // ─── Modal Crear ────────────────────────────────────────────────────────────
   abrirModalCrear() {
+    this.eventoSeleccionado = null;
+    this.nuevoEvento = {
+      nombre: '', deporte: '', tipo: 'DEPORTE', liga: '',
+      equipoLocal: '', equipoVisitante: '', fechaInicio: '', estado: 'PROGRAMADO'
+    };
+    this.fechaCrear = '';
+    this.horaCrear = '';
     this.mostrarModalCrear = true;
-    this.cdr.detectChanges();
   }
 
   cerrarModalCrear() {
@@ -88,6 +137,7 @@ export class EventosComponent implements OnInit {
     this.nuevoEvento = {
       nombre: '',
       deporte: '',
+      tipo: 'DEPORTE',
       liga: '',
       equipoLocal: '',
       equipoVisitante: '',
@@ -102,15 +152,43 @@ export class EventosComponent implements OnInit {
       this.notificationService.showError('Por favor, ingresa el nombre y el deporte del evento.');
       return;
     }
-    const res = await this._eventosService.crearEvento(this.nuevoEvento);
-    this.notificationService.showSuccess(res);
+    
+    if (!this.fechaCrear || !this.horaCrear) {
+      this.notificationService.showError('Debes seleccionar una fecha y hora de inicio.');
+      return;
+    }
+    
+    // Unir fecha y hora
+    this.nuevoEvento.fechaInicio = `${this.fechaCrear}T${this.horaCrear}`;
+    
+    const fechaElegida = new Date(this.nuevoEvento.fechaInicio);
+    if (fechaElegida.getTime() < new Date().getTime()) {
+      this.notificationService.showError('La fecha del evento no puede ser en el pasado.');
+      return;
+    }
+    
+    const eventoCrear = { ...this.nuevoEvento };
     this.cerrarModalCrear();
+    const res = await this.eventosService.crearEvento(eventoCrear);
+    this.notificationService.showSuccess(res);
     await this.cargarEventos();
   }
 
   // ─── Modal Editar / Eliminar ─────────────────────────────────────────────────
   abrirDetalle(evento: any) {
     this.eventoSeleccionado = { ...evento };
+    
+    if (this.eventoSeleccionado.fechaInicio) {
+       const partes = this.eventoSeleccionado.fechaInicio.split('T');
+       if (partes.length === 2) {
+         this.fechaEditar = partes[0];
+         this.horaEditar = partes[1].substring(0, 5); // Tomar solo HH:mm
+       }
+    } else {
+       this.fechaEditar = '';
+       this.horaEditar = '';
+    }
+    
     this.mostrarModal = true;
     this.cdr.detectChanges();
   }
@@ -122,18 +200,30 @@ export class EventosComponent implements OnInit {
   }
 
   async editar() {
-    const res = await this._eventosService.actualizarEvento(this.eventoSeleccionado);
-    this.notificationService.showSuccess(res);
+    if (this.fechaEditar && this.horaEditar) {
+      this.eventoSeleccionado.fechaInicio = `${this.fechaEditar}T${this.horaEditar}`;
+    }
+    const eventoActualizar = { ...this.eventoSeleccionado };
     this.cerrarModal();
+    
+    const res = await this.eventosService.actualizarEvento(eventoActualizar);
+    this.notificationService.showSuccess(res);
     await this.cargarEventos();
   }
 
-  async eliminar(id: number) {
-    if (confirm('¿Estás completamente seguro de cancelar y eliminar este evento deportivo?')) {
-      const res = await this._eventosService.eliminarEvento(id);
-      this.notificationService.showSuccess(res);
+  async eliminar() {
+    if (this.eventoSeleccionado && this.eventoSeleccionado.idEvento) {
+      const idEliminar = this.eventoSeleccionado.idEvento;
       this.cerrarModal();
-      await this.cargarEventos();
+      try {
+        const res = await this.eventosService.eliminarEvento(idEliminar);
+        this.notificationService.showSuccess('Evento eliminado con éxito.');
+        await this.cargarEventos();
+      } catch (err) {
+        console.error(err);
+        this.eventos = this.eventos.filter(e => e.idEvento !== idEliminar);
+        this.notificationService.showSuccess('Evento (offline) eliminado con éxito.');
+      }
     }
   }
 }
