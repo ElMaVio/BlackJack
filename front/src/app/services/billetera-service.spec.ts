@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { BilleteraService } from './billetera-service';
 
-@Component({
-  selector: 'app-billetera-component',
+describe('BilleteraService', () => {
+  let service: BilleteraService;
 
-  imports: [],
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(BilleteraService);
+  });
 
-  templateUrl: './billetera-component.html',
-
-  styleUrl: './billetera-component.scss',
-})
-export class billeteraComponent {}
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

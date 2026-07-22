@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { UsuariosService } from './usuario-service';
 
-@Component({
-  selector: 'app-usuarios-component',
+describe('UsuariosService', () => {
+  let service: UsuariosService;
 
-  imports: [],
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(UsuariosService);
+  });
 
-  templateUrl: './usuarios-component.html',
-
-  styleUrl: './usuarios-component.scss',
-})
-export class usuariosComponent {}
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

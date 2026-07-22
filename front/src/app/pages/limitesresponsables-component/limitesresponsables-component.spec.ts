@@ -1,19 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LimitesResponsablesComponent } from './limitesresponsables-component';
+import { LimitesresponsablesComponent } from './limitesresponsables-component';
 
 describe('LimitesresponsablesComponent', () => {
-  let component: LimitesResponsablesComponent;
-  let fixture: ComponentFixture<LimitesResponsablesComponent>;
+  let component: LimitesresponsablesComponent;
+  let fixture: ComponentFixture<LimitesresponsablesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LimitesResponsablesComponent],
-    }).compileComponents();
+      imports: [LimitesresponsablesComponent]
+    })
+    .compileComponents();
 
-    fixture = TestBed.createComponent(LimitesResponsablesComponent);
+    fixture = TestBed.createComponent(LimitesresponsablesComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
